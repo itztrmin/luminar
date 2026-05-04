@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>LUMINAR — /earth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@100;300;400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
@@ -23,8 +24,19 @@
     --card-h-expanded: 52vh;
   }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 100%; height: 100%; overflow: hidden; }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 
   body {
     background: #000;
@@ -35,21 +47,33 @@
 
   /* ── CURSOR ── */
   #cursor {
-    position: fixed; width: 5px; height: 5px;
-    background: var(--white); border-radius: 50%;
-    pointer-events: none; z-index: 9999;
-    transform: translate(-50%,-50%);
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    background: var(--white);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
     transition: transform 0.08s, opacity 0.3s;
     mix-blend-mode: difference;
   }
   #cursor-ring {
-    position: fixed; width: 28px; height: 28px;
-    border: 1px solid rgba(240,238,234,0.28); border-radius: 50%;
-    pointer-events: none; z-index: 9998;
-    transform: translate(-50%,-50%);
+    position: fixed;
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(240, 238, 234, 0.28);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
     transition: width 0.3s, height 0.3s, border-color 0.3s;
   }
-  body.hovering #cursor-ring { width: 44px; height: 44px; border-color: var(--blue-bright); }
+  body.hovering #cursor-ring {
+    width: 44px;
+    height: 44px;
+    border-color: var(--blue-bright);
+  }
 
   /* ── GLOBE CANVAS ── */
   #globe-canvas {
@@ -73,12 +97,14 @@
   #topbar {
     pointer-events: auto;
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 22px 36px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
   }
   .nav-logo {
     font-family: 'Cormorant Garamond', serif;
@@ -90,7 +116,10 @@
     opacity: 0;
     animation: fadeIn 1s ease 0.4s forwards;
   }
-  .nav-logo span { font-style: italic; color: var(--blue-bright); }
+  .nav-logo span {
+    font-style: italic;
+    color: var(--blue-bright);
+  }
 
   .nav-right {
     display: flex;
@@ -113,8 +142,14 @@
     transition: border-color 0.3s, color 0.3s;
     text-decoration: none;
   }
-  .nav-pill:hover { border-color: var(--glass-border-bright); color: var(--white); }
-  .nav-pill.active { border-color: var(--blue); color: var(--blue-bright); }
+  .nav-pill:hover {
+    border-color: var(--glass-border-bright);
+    color: var(--white);
+  }
+  .nav-pill.active {
+    border-color: var(--blue);
+    color: var(--blue-bright);
+  }
 
   /* ── SIDE READOUT — left edge ── */
   #side-readout {
@@ -137,7 +172,7 @@
     font-size: 7px;
     letter-spacing: 0.42em;
     text-transform: uppercase;
-    color: rgba(240,238,234,0.3);
+    color: rgba(240, 238, 234, 0.3);
   }
   .readout-value {
     font-size: 13px;
@@ -145,7 +180,9 @@
     color: var(--off);
     font-weight: 300;
   }
-  .readout-value.live { color: var(--blue-bright); }
+  .readout-value.live {
+    color: var(--blue-bright);
+  }
   .readout-divider {
     width: 1px;
     height: 32px;
@@ -176,9 +213,23 @@
     gap: 20px;
     align-items: center;
   }
-  .coord-label { font-size: 7px; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(240,238,234,0.3); }
-  .coord-val { font-size: 11px; color: var(--off); letter-spacing: 0.04em; font-weight: 300; }
-  .coord-sep { width: 100%; height: 1px; background: var(--off3); }
+  .coord-label {
+    font-size: 7px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(240, 238, 234, 0.3);
+  }
+  .coord-val {
+    font-size: 11px;
+    color: var(--off);
+    letter-spacing: 0.04em;
+    font-weight: 300;
+  }
+  .coord-sep {
+    width: 100%;
+    height: 1px;
+    background: var(--off3);
+  }
 
   /* ── BOTTOM FLOATING CARD ── */
   #terra-card {
@@ -208,11 +259,10 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(42,111,212,0.06) 0%, transparent 60%);
+    background: linear-gradient(135deg, rgba(42, 111, 212, 0.06) 0%, transparent 60%);
     pointer-events: none;
   }
 
-  /* Card Header */
   .card-header {
     display: flex;
     align-items: center;
@@ -227,13 +277,17 @@
   .card-header::after {
     content: '';
     position: absolute;
-    bottom: 0; left: 24px; right: 24px;
+    bottom: 0;
+    left: 24px;
+    right: 24px;
     height: 1px;
     background: var(--off3);
     opacity: 0;
     transition: opacity 0.3s;
   }
-  #terra-card.expanded .card-header::after { opacity: 1; }
+  #terra-card.expanded .card-header::after {
+    opacity: 1;
+  }
 
   .card-title-group {
     display: flex;
@@ -275,10 +329,11 @@
     font-size: 8px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(240,238,234,0.35);
+    color: rgba(240, 238, 234, 0.35);
   }
   .status-dot {
-    width: 5px; height: 5px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: #22c55e;
     box-shadow: 0 0 6px #22c55e;
@@ -286,30 +341,39 @@
   }
 
   .expand-btn {
-    width: 30px; height: 30px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     border: 1px solid var(--glass-border-bright);
     background: var(--off3);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: border-color 0.3s, background 0.3s;
+    pointer-events: auto;
   }
   .expand-btn svg {
     transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
   }
-  #terra-card.expanded .expand-btn svg { transform: rotate(180deg); }
-  .expand-btn:hover { border-color: var(--blue); background: var(--blue-glow); }
+  #terra-card.expanded .expand-btn svg {
+    transform: rotate(180deg);
+  }
+  .expand-btn:hover {
+    border-color: var(--blue);
+    background: var(--blue-glow);
+  }
 
-  /* Card Body */
   .card-body {
     padding: 28px 24px 24px;
     overflow-y: auto;
     height: calc(var(--card-h-expanded) - var(--card-h-collapsed));
     scrollbar-width: none;
   }
-  .card-body::-webkit-scrollbar { display: none; }
+  .card-body::-webkit-scrollbar {
+    display: none;
+  }
 
-  /* Tabs */
   .tab-bar {
     display: flex;
     gap: 2px;
@@ -335,13 +399,17 @@
   .tab-btn.active {
     background: rgba(42, 111, 212, 0.22);
     color: var(--blue-bright);
-    border: 1px solid rgba(42,111,212,0.3);
+    border: 1px solid rgba(42, 111, 212, 0.3);
   }
 
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+  .tab-panel {
+    display: none;
+  }
+  .tab-panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
 
-  /* Fact rows */
   .fact-row {
     display: flex;
     justify-content: space-between;
@@ -350,12 +418,14 @@
     border-bottom: 1px solid var(--off3);
     gap: 12px;
   }
-  .fact-row:last-child { border-bottom: none; }
+  .fact-row:last-child {
+    border-bottom: none;
+  }
   .fact-key {
     font-size: 8px;
     letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: rgba(240,238,234,0.35);
+    color: rgba(240, 238, 234, 0.35);
     flex-shrink: 0;
   }
   .fact-val {
@@ -365,9 +435,12 @@
     color: var(--white);
     text-align: right;
   }
-  .fact-val em { font-style: italic; color: var(--off); font-size: 13px; }
+  .fact-val em {
+    font-style: italic;
+    color: var(--off);
+    font-size: 13px;
+  }
 
-  /* Mini bar chart for atmosphere */
   .atm-bar-wrap {
     margin-top: 18px;
   }
@@ -407,7 +480,6 @@
     flex-shrink: 0;
   }
 
-  /* Orbit timeline visual */
   .orbit-visual {
     margin-top: 14px;
     display: grid;
@@ -422,7 +494,9 @@
     text-align: center;
     transition: border-color 0.3s;
   }
-  .orbit-cell:hover { border-color: var(--glass-border-bright); }
+  .orbit-cell:hover {
+    border-color: var(--glass-border-bright);
+  }
   .orbit-cell-val {
     font-family: 'Cormorant Garamond', serif;
     font-size: 20px;
@@ -435,7 +509,7 @@
     font-size: 7px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(240,238,234,0.3);
+    color: rgba(240, 238, 234, 0.3);
   }
 
   /* ── CONTROLS HINT ── */
@@ -456,41 +530,75 @@
     font-size: 8px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(240,238,234,0.28);
+    color: rgba(240, 238, 234, 0.28);
   }
   .hint-key {
-    width: 22px; height: 22px;
+    width: 22px;
+    height: 22px;
     border: 1px solid var(--off3);
     border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 9px;
-    color: rgba(240,238,234,0.3);
+    color: rgba(240, 238, 234, 0.3);
     flex-shrink: 0;
   }
 
   /* ── ANIMATIONS ── */
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
   @keyframes fadeInLeft {
-    from { opacity: 0; transform: translateY(-50%) translateX(-12px); }
-    to { opacity: 1; transform: translateY(-50%) translateX(0); }
+    from {
+      opacity: 0;
+      transform: translateY(-50%) translateX(-12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
   }
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   @keyframes slideUp {
-    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
   @keyframes pulse-green {
-    0%, 100% { opacity: 1; box-shadow: 0 0 6px #22c55e; }
-    50% { opacity: 0.5; box-shadow: 0 0 2px #22c55e; }
+    0%,
+    100% {
+      opacity: 1;
+      box-shadow: 0 0 6px #22c55e;
+    }
+    50% {
+      opacity: 0.5;
+      box-shadow: 0 0 2px #22c55e;
+    }
   }
   @keyframes spin-ring {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* ── LOADING SCREEN ── */
@@ -506,9 +614,13 @@
     gap: 24px;
     transition: opacity 0.8s ease;
   }
-  #loader.done { opacity: 0; pointer-events: none; }
+  #loader.done {
+    opacity: 0;
+    pointer-events: none;
+  }
   .loader-ring {
-    width: 48px; height: 48px;
+    width: 48px;
+    height: 48px;
     border: 1px solid var(--off3);
     border-top-color: var(--blue);
     border-radius: 50%;
@@ -523,12 +635,25 @@
 
   /* Responsive */
   @media (max-width: 600px) {
-    #side-readout { display: none; }
-    #controls-hint { display: none; }
-    #coord-badge { top: 72px; right: 16px; }
-    #topbar { padding: 18px 20px; }
-    #terra-card { bottom: 20px; }
-    :root { --card-h-expanded: 56vh; }
+    #side-readout {
+      display: none;
+    }
+    #controls-hint {
+      display: none;
+    }
+    #coord-badge {
+      top: 72px;
+      right: 16px;
+    }
+    #topbar {
+      padding: 18px 20px;
+    }
+    #terra-card {
+      bottom: 20px;
+    }
+    :root {
+      --card-h-expanded: 56vh;
+    }
   }
 </style>
 </head>
@@ -759,13 +884,21 @@ import * as THREE from 'three';
 // ── Cursor ──
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+let mx = 0,
+  my = 0,
+  rx = 0,
+  ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX;
+  my = e.clientY;
+});
 (function animCursor() {
   rx += (mx - rx) * 0.14;
   ry += (my - ry) * 0.14;
-  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
-  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
   requestAnimationFrame(animCursor);
 })();
 document.querySelectorAll('a, button, .expand-btn, .tab-btn, .nav-pill, .orbit-cell').forEach(el => {
@@ -780,20 +913,34 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
 camera.position.z = 280;
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  antialias: true,
+  powerPreference: 'high-performance'
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 
+// Use reliable CDN texture URLs (threejs.org examples directory)
+const TEXTURE_BASE = 'https://threejs.org/examples/textures/planets/';
+const textureUrls = {
+  day: TEXTURE_BASE + 'earth_atmos_2048.jpg',
+  night: TEXTURE_BASE + 'earth_lights_2048.png',
+  clouds: TEXTURE_BASE + 'earth_clouds_1024.png',
+  bump: TEXTURE_BASE + 'earth_normal_2048.jpg'
+};
+
 const loader = new THREE.TextureLoader();
+loader.setCrossOrigin('anonymous');
 const loadTex = url => new Promise((res, rej) => loader.load(url, res, undefined, rej));
 
 Promise.all([
-  loadTex('https://unpkg.com/three-globe/example/img/earth-day.jpg'),
-  loadTex('https://unpkg.com/three-globe/example/img/earth-night.jpg'),
-  loadTex('https://unpkg.com/three-globe/example/img/earth-clouds.png'),
-  loadTex('https://unpkg.com/three-globe/example/img/earth-topology.png'),
+  loadTex(textureUrls.day),
+  loadTex(textureUrls.night),
+  loadTex(textureUrls.clouds),
+  loadTex(textureUrls.bump),
 ]).then(([dayTex, nightTex, cloudsTex, bumpTex]) => {
 
   // Dismiss loader
@@ -808,7 +955,7 @@ Promise.all([
       bumpTexture: { value: bumpTex },
       sunDirection: { value: new THREE.Vector3(1, 0.3, 0.5).normalize() },
     },
-    vertexShader: `
+    vertexShader: /* glsl */ `
       varying vec2 vUv;
       varying vec3 vNormal;
       varying vec3 vPosition;
@@ -819,26 +966,42 @@ Promise.all([
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
-    fragmentShader: `
+    fragmentShader: /* glsl */ `
       uniform sampler2D dayTexture;
       uniform sampler2D nightTexture;
+      uniform sampler2D bumpTexture;
       uniform vec3 sunDirection;
       varying vec2 vUv;
       varying vec3 vNormal;
       varying vec3 vPosition;
+
       void main() {
         vec3 normal = normalize(vNormal);
-        float sunDot = dot(normal, sunDirection);
+
+        // Simple bump mapping
+        float bumpScale = 0.02;
+        vec2 bumpUv = vUv;
+        float bumpSample = texture2D(bumpTexture, bumpUv).r;
+        vec3 bumpNormal = normal + (bumpSample - 0.5) * bumpScale * normal;
+        bumpNormal = normalize(bumpNormal);
+
+        float sunDot = dot(bumpNormal, sunDirection);
         float dayFactor = smoothstep(-0.15, 0.28, sunDot);
+
         vec4 dayColor = texture2D(dayTexture, vUv);
         vec4 nightColor = texture2D(nightTexture, vUv);
         nightColor.rgb *= 1.7;
+
         vec3 viewDir = normalize(cameraPosition - vPosition);
         vec3 halfDir = normalize(sunDirection + viewDir);
-        float spec = pow(max(dot(normal, halfDir), 0.0), 90.0);
+        float spec = pow(max(dot(bumpNormal, halfDir), 0.0), 90.0);
+
         vec4 finalColor = mix(nightColor, dayColor, dayFactor);
+
+        // Water specular highlight
         float waterMask = clamp(1.0 - dayColor.r * 0.6 - dayColor.g * 0.3, 0.0, 1.0);
         finalColor.rgb += spec * waterMask * 0.45 * dayFactor;
+
         gl_FragColor = finalColor;
       }
     `,
@@ -849,24 +1012,43 @@ Promise.all([
   // ── Clouds ──
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(101.8, 64, 64),
-    new THREE.MeshPhongMaterial({ map: cloudsTex, transparent: true, opacity: 0.82, depthWrite: false })
+    new THREE.MeshPhongMaterial({
+      map: cloudsTex,
+      transparent: true,
+      opacity: 0.82,
+      depthWrite: false
+    })
   );
   scene.add(clouds);
 
   // ── Atmosphere Glow ──
   const makeGlow = (radius, color, side, intensity, power) => {
     const mat = new THREE.ShaderMaterial({
-      uniforms: { glowColor: { value: new THREE.Color(color) }, viewVector: { value: camera.position } },
-      vertexShader: `uniform vec3 viewVector; varying float intensity;
+      uniforms: {
+        glowColor: { value: new THREE.Color(color) },
+        viewVector: { value: camera.position }
+      },
+      vertexShader: /* glsl */ `
+        uniform vec3 viewVector;
+        varying float intensity;
         void main() {
           vec3 vN = normalize(normalMatrix * normal);
           vec3 vV = normalize(normalMatrix * viewVector);
           intensity = pow(${intensity.toFixed(2)} - dot(vN, vV), ${power.toFixed(1)});
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }`,
-      fragmentShader: `uniform vec3 glowColor; varying float intensity;
-        void main() { gl_FragColor = vec4(glowColor * intensity, intensity * 0.85); }`,
-      side, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform vec3 glowColor;
+        varying float intensity;
+        void main() {
+          gl_FragColor = vec4(glowColor * intensity, intensity * 0.85);
+        }
+      `,
+      side,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false,
     });
     scene.add(new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 64), mat));
     return mat;
@@ -879,7 +1061,12 @@ Promise.all([
   for (let i = 0; i < sp.length; i++) sp[i] = (Math.random() - 0.5) * 8000;
   const starGeo = new THREE.BufferGeometry();
   starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-  const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.75, transparent: true, opacity: 0.8 });
+  const starMat = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.75,
+    transparent: true,
+    opacity: 0.8
+  });
   scene.add(new THREE.Points(starGeo, starMat));
 
   // ── Lights ──
@@ -889,42 +1076,55 @@ Promise.all([
   scene.add(new THREE.AmbientLight(0x111133, 0.4));
 
   // ── Interaction ──
-  let dragging = false, px = 0, py = 0, vx = 0, vy = 0;
-  let userActive = false, userTimer;
+  let dragging = false,
+    px = 0,
+    py = 0,
+    vx = 0,
+    vy = 0;
+  let userActive = false,
+    userTimer;
   let targetZ = 280;
 
-  // Mouse drag — attach to window so dragging outside canvas still works
   canvas.addEventListener('mousedown', e => {
-    dragging = true; userActive = true;
-    px = e.clientX; py = e.clientY; vx = vy = 0;
+    dragging = true;
+    userActive = true;
+    px = e.clientX;
+    py = e.clientY;
+    vx = vy = 0;
   });
   window.addEventListener('mousemove', e => {
     if (!dragging) return;
-    const dx = e.clientX - px, dy = e.clientY - py;
-    vx = dy * 0.003; vy = dx * 0.003;
-    earth.rotation.x += vx; earth.rotation.y += vy;
-    clouds.rotation.x += vx; clouds.rotation.y += vy;
-    px = e.clientX; py = e.clientY;
+    const dx = e.clientX - px,
+      dy = e.clientY - py;
+    vx = dy * 0.003;
+    vy = dx * 0.003;
+    earth.rotation.x += vx;
+    earth.rotation.y += vy;
+    clouds.rotation.x += vx;
+    clouds.rotation.y += vy;
+    px = e.clientX;
+    py = e.clientY;
     updateCoords();
   });
   window.addEventListener('mouseup', () => {
     dragging = false;
     clearTimeout(userTimer);
-    userTimer = setTimeout(() => userActive = false, 1200);
+    userTimer = setTimeout(() => (userActive = false), 1200);
   });
 
-  // Scroll zoom
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     targetZ = Math.max(130, Math.min(520, targetZ + e.deltaY * 0.28));
     updateAlt();
   }, { passive: false });
 
-  // Touch
+  // Touch support
   let lp = null;
   canvas.addEventListener('touchstart', e => {
-    dragging = true; userActive = true;
-    px = e.touches[0].clientX; py = e.touches[0].clientY;
+    dragging = true;
+    userActive = true;
+    px = e.touches[0].clientX;
+    py = e.touches[0].clientY;
   });
   canvas.addEventListener('touchmove', e => {
     e.preventDefault();
@@ -933,19 +1133,29 @@ Promise.all([
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      if (lp) { targetZ = Math.max(130, Math.min(520, targetZ - (d - lp) * 0.8)); updateAlt(); }
+      if (lp) {
+        targetZ = Math.max(130, Math.min(520, targetZ - (d - lp) * 0.8));
+        updateAlt();
+      }
       lp = d;
     } else if (dragging) {
-      const ddx = e.touches[0].clientX - px, ddy = e.touches[0].clientY - py;
-      earth.rotation.x += ddy * 0.003; earth.rotation.y += ddx * 0.003;
-      clouds.rotation.x += ddy * 0.003; clouds.rotation.y += ddx * 0.003;
-      px = e.touches[0].clientX; py = e.touches[0].clientY;
+      const ddx = e.touches[0].clientX - px,
+        ddy = e.touches[0].clientY - py;
+      earth.rotation.x += ddy * 0.003;
+      earth.rotation.y += ddx * 0.003;
+      clouds.rotation.x += ddy * 0.003;
+      clouds.rotation.y += ddx * 0.003;
+      px = e.touches[0].clientX;
+      py = e.touches[0].clientY;
       updateCoords();
     }
   }, { passive: false });
-  canvas.addEventListener('touchend', () => { dragging = false; lp = null; setTimeout(() => userActive = false, 1200); });
+  canvas.addEventListener('touchend', () => {
+    dragging = false;
+    lp = null;
+    setTimeout(() => (userActive = false), 1200);
+  });
 
-  // Resize
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -959,6 +1169,7 @@ Promise.all([
     document.getElementById('lat-val').textContent = (lat >= 0 ? '+' : '') + lat.toFixed(2) + '°';
     document.getElementById('lon-val').textContent = (lon >= 0 ? '+' : '') + lon.toFixed(2) + '°';
   }
+
   function updateAlt() {
     const km = Math.round((targetZ - 100) * 2.8);
     document.getElementById('alt-val').textContent = km.toLocaleString() + ' km';
@@ -974,9 +1185,12 @@ Promise.all([
       earth.rotation.y += 0.0012;
       clouds.rotation.y += 0.0014;
     } else {
-      vx *= 0.91; vy *= 0.91;
-      earth.rotation.x += vx * 0.18; earth.rotation.y += vy * 0.18;
-      clouds.rotation.x += vx * 0.18; clouds.rotation.y += vy * 0.18;
+      vx *= 0.91;
+      vy *= 0.91;
+      earth.rotation.x += vx * 0.18;
+      earth.rotation.y += vy * 0.18;
+      clouds.rotation.x += vx * 0.18;
+      clouds.rotation.y += vy * 0.18;
     }
     clouds.rotation.y += 0.00018;
     camera.position.z += (targetZ - camera.position.z) * 0.07;
@@ -988,16 +1202,34 @@ Promise.all([
 
 }).catch(err => {
   console.error('Texture load failed:', err);
-  document.getElementById('loader').querySelector('.loader-text').textContent = 'Load error';
+  const loaderEl = document.getElementById('loader');
+  const loaderText = loaderEl.querySelector('.loader-text');
+  loaderText.textContent = 'Load error — retrying...';
+  // Auto-dismiss loader after a delay so the UI isn't stuck forever
+  setTimeout(() => loaderEl.classList.add('done'), 2500);
 });
 
 // ── Card Expand / Collapse ──
 const card = document.getElementById('terra-card');
 const toggle = document.getElementById('card-toggle');
+const expandBtn = document.getElementById('expand-btn');
 
 toggle.addEventListener('click', () => {
   card.classList.toggle('expanded');
-  // Animate atmosphere bars when expanding
+  if (card.classList.contains('expanded')) {
+    setTimeout(() => {
+      document.querySelectorAll('.atm-fill').forEach(bar => {
+        const w = parseFloat(bar.dataset.width);
+        bar.style.transform = `scaleX(${w})`;
+      });
+    }, 80);
+  }
+});
+
+// Prevent double-toggle when clicking the expand button directly
+expandBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  card.classList.toggle('expanded');
   if (card.classList.contains('expanded')) {
     setTimeout(() => {
       document.querySelectorAll('.atm-fill').forEach(bar => {
@@ -1016,12 +1248,13 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
 
-    // Trigger bar animations for atmosphere tab
     if (btn.dataset.tab === 'atmosphere') {
       setTimeout(() => {
         document.querySelectorAll('.atm-fill').forEach(bar => {
           bar.style.transform = 'scaleX(0)';
-          setTimeout(() => { bar.style.transform = `scaleX(${parseFloat(bar.dataset.width)})`; }, 50);
+          setTimeout(() => {
+            bar.style.transform = `scaleX(${parseFloat(bar.dataset.width)})`;
+          }, 50);
         });
       }, 50);
     }
