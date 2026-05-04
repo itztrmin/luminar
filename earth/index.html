@@ -83,6 +83,10 @@
     height: 100vh;
     display: block;
     z-index: 0;
+    transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  #globe-canvas.card-open {
+    transform: translateY(-10vh) scale(0.88);
   }
 
   /* ── OVERLAY SHELL — pointer-events: none so globe stays interactive ── */
@@ -778,7 +782,15 @@
           <span class="fact-val">101.325 <em>kPa</em></span>
         </div>
         <div class="fact-row">
-          <span class="fact-key">Thickness</span>
+          <span class="fact-key">Troposphere Height</span>
+          <span class="fact-val">~12 <em>km avg</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Ozone Layer</span>
+          <span class="fact-val">15 – 35 <em>km altitude</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Exosphere limit</span>
           <span class="fact-val">~10,000 <em>km</em></span>
         </div>
         <div class="atm-bar-wrap">
@@ -799,8 +811,13 @@
           </div>
           <div class="atm-row">
             <span class="atm-name">CO₂</span>
-            <div class="atm-track"><div class="atm-fill" style="width:0.04%;background:#f97316;" data-width="0.0004"></div></div>
-            <span class="atm-pct">0.04%</span>
+            <div class="atm-track"><div class="atm-fill" style="width:0.04%;background:#f97316;" data-width="0.0421"></div></div>
+            <span class="atm-pct">0.042%</span>
+          </div>
+          <div class="atm-row">
+            <span class="atm-name">Water Vap.</span>
+            <div class="atm-track"><div class="atm-fill" style="width:2%;background:#67e8f9;" data-width="0.025"></div></div>
+            <span class="atm-pct">~2.5%</span>
           </div>
         </div>
       </div>
@@ -817,11 +834,15 @@
         </div>
         <div class="fact-row">
           <span class="fact-key">Equatorial Radius</span>
-          <span class="fact-val">6,378 <em>km</em></span>
+          <span class="fact-val">6,378.1 <em>km</em></span>
         </div>
         <div class="fact-row">
           <span class="fact-key">Polar Radius</span>
-          <span class="fact-val">6,357 <em>km</em></span>
+          <span class="fact-val">6,356.8 <em>km</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Flattening</span>
+          <span class="fact-val">1 / 298.257</span>
         </div>
         <div class="fact-row">
           <span class="fact-key">Surface Gravity</span>
@@ -830,6 +851,18 @@
         <div class="fact-row">
           <span class="fact-key">Escape Velocity</span>
           <span class="fact-val">11.186 <em>km/s</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Core Composition</span>
+          <span class="fact-val">Fe–Ni <em>alloy</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Core Temp</span>
+          <span class="fact-val">~5,400 <em>°C</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Mantle Thickness</span>
+          <span class="fact-val">2,890 <em>km</em></span>
         </div>
       </div>
 
@@ -841,11 +874,23 @@
         </div>
         <div class="fact-row">
           <span class="fact-key">Eccentricity</span>
-          <span class="fact-val">0.0167</span>
+          <span class="fact-val">0.01671</span>
         </div>
         <div class="fact-row">
           <span class="fact-key">Orbital Speed</span>
           <span class="fact-val">29.78 <em>km/s</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Inclination to Ecliptic</span>
+          <span class="fact-val">0.00005 <em>°</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Perihelion</span>
+          <span class="fact-val">147.095 <em>× 10⁶ km</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Aphelion</span>
+          <span class="fact-val">152.100 <em>× 10⁶ km</em></span>
         </div>
         <div class="orbit-visual">
           <div class="orbit-cell">
@@ -853,8 +898,8 @@
             <span class="orbit-cell-key">Days / Year</span>
           </div>
           <div class="orbit-cell">
-            <span class="orbit-cell-val">23.44</span>
-            <span class="orbit-cell-key">Axial Tilt °</span>
+            <span class="orbit-cell-val">23.44°</span>
+            <span class="orbit-cell-key">Axial Tilt</span>
           </div>
           <div class="orbit-cell">
             <span class="orbit-cell-val">1.521</span>
@@ -1075,6 +1120,34 @@ Promise.all([
   scene.add(sun);
   scene.add(new THREE.AmbientLight(0x111133, 0.4));
 
+  // ── Equator Ring ──
+  const equatorGeo = new THREE.TorusGeometry(100.6, 0.28, 16, 200);
+  const equatorMat = new THREE.MeshBasicMaterial({
+    color: 0x4a9fff,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const equatorRing = new THREE.Mesh(equatorGeo, equatorMat);
+  equatorRing.rotation.x = Math.PI / 2;
+  scene.add(equatorRing);
+
+  // Outer glow ring (wider, softer)
+  const equatorGlowGeo = new THREE.TorusGeometry(101.2, 1.1, 16, 200);
+  const equatorGlowMat = new THREE.MeshBasicMaterial({
+    color: 0x2a6fd4,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const equatorGlow = new THREE.Mesh(equatorGlowGeo, equatorGlowMat);
+  equatorGlow.rotation.x = Math.PI / 2;
+  scene.add(equatorGlow);
+
+  let equatorTargetOpacity = 0;
+
   // ── Interaction ──
   let dragging = false,
     px = 0,
@@ -1084,6 +1157,7 @@ Promise.all([
   let userActive = false,
     userTimer;
   let targetZ = 280;
+  let orbitModeActive = false;
 
   canvas.addEventListener('mousedown', e => {
     dragging = true;
@@ -1162,25 +1236,46 @@ Promise.all([
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // ── Coordinate Readout ──
+  // ── Coordinate Readout — live from camera distance + earth rotation ──
   function updateCoords() {
-    const lat = (earth.rotation.x * (180 / Math.PI)) % 180;
-    const lon = (earth.rotation.y * (180 / Math.PI)) % 360;
-    document.getElementById('lat-val').textContent = (lat >= 0 ? '+' : '') + lat.toFixed(2) + '°';
-    document.getElementById('lon-val').textContent = (lon >= 0 ? '+' : '') + lon.toFixed(2) + '°';
+    // Map earth rotation to lat/lon naturally
+    let lat = (-earth.rotation.x * (180 / Math.PI));
+    lat = ((lat + 90) % 180) - 90; // clamp to [-90, 90]
+    let lon = (earth.rotation.y * (180 / Math.PI));
+    lon = ((lon % 360) + 360) % 360;
+    if (lon > 180) lon -= 360; // wrap to [-180, 180]
+
+    document.getElementById('lat-val').textContent =
+      (lat >= 0 ? '+' : '') + lat.toFixed(2) + '°';
+    document.getElementById('lon-val').textContent =
+      (lon >= 0 ? '+' : '') + lon.toFixed(2) + '°';
   }
 
   function updateAlt() {
-    const km = Math.round((targetZ - 100) * 2.8);
+    const km = Math.round((camera.position.z - 100) * 2.8);
     document.getElementById('alt-val').textContent = km.toLocaleString() + ' km';
   }
   updateAlt();
+
+  // ── Orbit Mode — triggered by tab ──
+  window.setOrbitMode = function(active) {
+    orbitModeActive = active;
+    if (active) {
+      targetZ = 400; // wide view
+      equatorTargetOpacity = 1;
+    } else {
+      targetZ = 280;
+      equatorTargetOpacity = 0;
+    }
+    updateAlt();
+  };
 
   // ── Animate loop ──
   let t = 0;
   (function animate() {
     requestAnimationFrame(animate);
     t += 0.005;
+
     if (!userActive) {
       earth.rotation.y += 0.0012;
       clouds.rotation.y += 0.0014;
@@ -1193,7 +1288,19 @@ Promise.all([
       clouds.rotation.y += vy * 0.18;
     }
     clouds.rotation.y += 0.00018;
-    camera.position.z += (targetZ - camera.position.z) * 0.07;
+
+    // Smooth camera zoom
+    camera.position.z += (targetZ - camera.position.z) * 0.06;
+
+    // Live coordinate sync every frame
+    updateCoords();
+    updateAlt();
+
+    // Equator ring pulse + fade
+    const pulse = 0.7 + Math.sin(t * 2.8) * 0.3;
+    equatorMat.opacity += (equatorTargetOpacity * pulse * 0.82 - equatorMat.opacity) * 0.06;
+    equatorGlowMat.opacity += (equatorTargetOpacity * pulse * 0.22 - equatorGlowMat.opacity) * 0.06;
+
     atmMat.uniforms.viewVector.value.copy(camera.position);
     outerMat.uniforms.viewVector.value.copy(camera.position);
     starMat.opacity = 0.68 + Math.sin(t * 1.1) * 0.1;
@@ -1209,44 +1316,50 @@ Promise.all([
   setTimeout(() => loaderEl.classList.add('done'), 2500);
 });
 
-// ── Card Expand / Collapse ──
+// ── Card Expand / Collapse — syncs globe offset ──
 const card = document.getElementById('terra-card');
 const toggle = document.getElementById('card-toggle');
 const expandBtn = document.getElementById('expand-btn');
+const globeCanvas = document.getElementById('globe-canvas');
 
-toggle.addEventListener('click', () => {
-  card.classList.toggle('expanded');
-  if (card.classList.contains('expanded')) {
-    setTimeout(() => {
-      document.querySelectorAll('.atm-fill').forEach(bar => {
-        const w = parseFloat(bar.dataset.width);
-        bar.style.transform = `scaleX(${w})`;
-      });
-    }, 80);
+function triggerAtmBars() {
+  setTimeout(() => {
+    document.querySelectorAll('.atm-fill').forEach(bar => {
+      const w = parseFloat(bar.dataset.width);
+      bar.style.transform = `scaleX(${w})`;
+    });
+  }, 80);
+}
+
+function setExpanded(expanded) {
+  if (expanded) {
+    card.classList.add('expanded');
+    globeCanvas.classList.add('card-open');
+    triggerAtmBars();
+  } else {
+    card.classList.remove('expanded');
+    globeCanvas.classList.remove('card-open');
   }
-});
+}
 
-// Prevent double-toggle when clicking the expand button directly
+toggle.addEventListener('click', () => setExpanded(!card.classList.contains('expanded')));
 expandBtn.addEventListener('click', (e) => {
   e.stopPropagation();
-  card.classList.toggle('expanded');
-  if (card.classList.contains('expanded')) {
-    setTimeout(() => {
-      document.querySelectorAll('.atm-fill').forEach(bar => {
-        const w = parseFloat(bar.dataset.width);
-        bar.style.transform = `scaleX(${w})`;
-      });
-    }, 80);
-  }
+  setExpanded(!card.classList.contains('expanded'));
 });
 
-// ── Tab Switching ──
+// ── Tab Switching — ORBIT tab triggers wide view + equator ring ──
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+
+    // Orbit tab: wide camera + equator ring
+    if (typeof window.setOrbitMode === 'function') {
+      window.setOrbitMode(btn.dataset.tab === 'orbit');
+    }
 
     if (btn.dataset.tab === 'atmosphere') {
       setTimeout(() => {
