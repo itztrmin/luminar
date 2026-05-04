@@ -1,685 +1,751 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TERRA — Earth Observatory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>LUMINAR — /earth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@100;300;400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@100;300;400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
     --blue: #2a6fd4;
+    --blue-bright: #4a9fff;
     --blue-dim: #1a4fa3;
-    --blue-glow: rgba(42,111,212,0.15);
+    --blue-glow: rgba(42,111,212,0.18);
     --white: #f0eeea;
-    --off: rgba(240,238,234,0.45);
-    --off2: rgba(240,238,234,0.12);
+    --off: rgba(240,238,234,0.5);
+    --off2: rgba(240,238,234,0.15);
     --off3: rgba(240,238,234,0.06);
+    --glass-bg: rgba(4, 8, 20, 0.55);
+    --glass-border: rgba(240, 238, 234, 0.1);
+    --glass-border-bright: rgba(240, 238, 234, 0.22);
+    --card-h-collapsed: 88px;
+    --card-h-expanded: 52vh;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
 
   body {
     background: #000;
     color: var(--white);
     font-family: 'Geist Mono', monospace;
-    overflow-x: hidden;
     cursor: none;
   }
 
-  /* --- Custom Cursor --- */
+  /* ── CURSOR ── */
   #cursor {
-    position: fixed;
-    width: 6px; height: 6px;
-    background: var(--white);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
+    position: fixed; width: 5px; height: 5px;
+    background: var(--white); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
     transform: translate(-50%,-50%);
-    transition: transform 0.1s, width 0.25s, height 0.25s, background 0.25s;
+    transition: transform 0.08s, opacity 0.3s;
+    mix-blend-mode: difference;
   }
   #cursor-ring {
-    position: fixed;
-    width: 32px; height: 32px;
-    border: 1px solid rgba(240,238,234,0.3);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
+    position: fixed; width: 28px; height: 28px;
+    border: 1px solid rgba(240,238,234,0.28); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
     transform: translate(-50%,-50%);
-    transition: transform 0.12s ease-out, width 0.25s, height 0.25s, opacity 0.25s, border-color 0.25s;
+    transition: width 0.3s, height 0.3s, border-color 0.3s;
   }
-  body:has(a:hover) #cursor-ring,
-  body:has(button:hover) #cursor-ring { width: 48px; height: 48px; border-color: var(--blue); }
+  body.hovering #cursor-ring { width: 44px; height: 44px; border-color: var(--blue-bright); }
 
-  /* --- NAV --- */
-  nav {
+  /* ── GLOBE CANVAS ── */
+  #globe-canvas {
     position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    z-index: 0;
+  }
+
+  /* ── OVERLAY SHELL — pointer-events: none so globe stays interactive ── */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  /* ── TOP NAV ── */
+  #topbar {
+    pointer-events: auto;
+    position: absolute;
     top: 0; left: 0; right: 0;
-    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 48px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    padding: 22px 36px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
   }
   .nav-logo {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 300;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     color: var(--white);
     text-decoration: none;
     opacity: 0;
-    animation: fadeIn 1s ease 0.5s forwards;
+    animation: fadeIn 1s ease 0.4s forwards;
   }
-  .nav-logo span { font-style: italic; color: var(--blue); }
-  .nav-links {
-    display: flex;
-    gap: 36px;
-    list-style: none;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.8s forwards;
-  }
-  .nav-links a {
-    font-size: 9px;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--off);
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  .nav-links a:hover { color: var(--white); }
+  .nav-logo span { font-style: italic; color: var(--blue-bright); }
 
-  /* --- HERO --- */
-  #hero {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
+  .nav-right {
     display: flex;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    gap: 28px;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.7s forwards;
   }
-  #globe-canvas {
+  .nav-pill {
+    font-size: 8px;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: var(--off);
+    padding: 6px 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+    text-decoration: none;
+  }
+  .nav-pill:hover { border-color: var(--glass-border-bright); color: var(--white); }
+  .nav-pill.active { border-color: var(--blue); color: var(--blue-bright); }
+
+  /* ── SIDE READOUT — left edge ── */
+  #side-readout {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    pointer-events: none;
+    left: 36px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 20px;
+    gap: 28px;
+    opacity: 0;
+    animation: fadeInLeft 1s ease 1.2s forwards;
   }
-  .hero-eyebrow {
-    font-size: 9px;
-    letter-spacing: 0.5em;
+  .readout-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .readout-label {
+    font-size: 7px;
+    letter-spacing: 0.42em;
     text-transform: uppercase;
-    color: var(--off);
-    opacity: 0;
-    animation: fadeInUp 1s ease 1.2s forwards;
+    color: rgba(240,238,234,0.3);
   }
-  .hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(64px, 10vw, 140px);
+  .readout-value {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--off);
     font-weight: 300;
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-    color: var(--white);
-    opacity: 0;
-    animation: fadeInUp 1.2s ease 1.4s forwards;
-    mix-blend-mode: overlay;
   }
-  .hero-title em {
-    font-style: italic;
-    color: rgba(255,255,255,0.5);
+  .readout-value.live { color: var(--blue-bright); }
+  .readout-divider {
+    width: 1px;
+    height: 32px;
+    background: linear-gradient(to bottom, transparent, var(--off3), transparent);
+    margin-left: 2px;
   }
-  .hero-sub {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: var(--off);
-    max-width: 360px;
-    line-height: 1.9;
-    opacity: 0;
-    animation: fadeInUp 1s ease 1.7s forwards;
-  }
-  .scroll-hint {
+
+  /* ── COORDINATE BADGE — top right corner ── */
+  #coord-badge {
     position: absolute;
-    bottom: 36px;
+    top: 82px;
+    right: 36px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    border-radius: 8px;
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.4s forwards;
+    min-width: 168px;
+  }
+  .coord-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+  }
+  .coord-label { font-size: 7px; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(240,238,234,0.3); }
+  .coord-val { font-size: 11px; color: var(--off); letter-spacing: 0.04em; font-weight: 300; }
+  .coord-sep { width: 100%; height: 1px; background: var(--off3); }
+
+  /* ── BOTTOM FLOATING CARD ── */
+  #terra-card {
+    pointer-events: auto;
+    position: absolute;
+    bottom: 32px;
     left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-    animation: fadeIn 1s ease 2.2s forwards;
-    z-index: 2;
-  }
-  .scroll-hint span {
-    font-size: 8px;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--off2);
-  }
-  .scroll-line {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(to bottom, var(--off2), transparent);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-
-  /* --- STATS BAR --- */
-  .stats-bar {
-    position: relative;
-    z-index: 3;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-top: 1px solid var(--off3);
-    border-bottom: 1px solid var(--off3);
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(20px);
-  }
-  .stat {
-    padding: 32px 40px;
-    border-right: 1px solid var(--off3);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .stat:last-child { border-right: none; }
-  .stat-value {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 42px;
-    font-weight: 300;
-    color: var(--white);
-    line-height: 1;
-  }
-  .stat-value sup { font-size: 18px; vertical-align: super; color: var(--blue); }
-  .stat-label {
-    font-size: 8px;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--off);
-  }
-
-  /* --- SECTIONS --- */
-  section {
-    padding: 120px 48px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .section-tag {
-    font-size: 8px;
-    letter-spacing: 0.45em;
-    text-transform: uppercase;
-    color: var(--blue);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-tag::before {
-    content: '';
-    display: inline-block;
-    width: 24px;
-    height: 1px;
-    background: var(--blue);
-  }
-
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(36px, 5vw, 68px);
-    font-weight: 300;
-    line-height: 1.1;
-    margin-bottom: 24px;
-  }
-  .section-title em { font-style: italic; color: var(--off); }
-
-  /* --- FEATURES GRID --- */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--off3);
-    border: 1px solid var(--off3);
-    margin-top: 80px;
-  }
-  .feature-card {
-    background: #000;
-    padding: 48px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    transition: background 0.4s;
-    position: relative;
+    width: min(580px, calc(100vw - 48px));
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border-bright);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border-radius: 20px;
     overflow: hidden;
-  }
-  .feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--blue), transparent);
+    transition: height 0.55s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s;
+    height: var(--card-h-collapsed);
     opacity: 0;
-    transition: opacity 0.4s;
+    animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) 1.8s forwards;
+    will-change: height;
   }
-  .feature-card:hover { background: rgba(42,111,212,0.04); }
-  .feature-card:hover::before { opacity: 1; }
-  .feature-number {
-    font-size: 9px;
-    letter-spacing: 0.35em;
-    color: var(--off2);
+  #terra-card.expanded {
+    height: var(--card-h-expanded);
+    border-color: rgba(74, 159, 255, 0.25);
   }
-  .feature-icon {
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--off3);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--blue);
-    font-size: 16px;
-    transition: border-color 0.4s, box-shadow 0.4s;
-  }
-  .feature-card:hover .feature-icon {
-    border-color: var(--blue);
-    box-shadow: 0 0 16px var(--blue-glow);
-  }
-  .feature-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 24px;
-    font-weight: 300;
-  }
-  .feature-desc {
-    font-size: 10px;
-    letter-spacing: 0.05em;
-    line-height: 2;
-    color: var(--off);
-  }
-
-  /* --- ABOUT / SPLIT --- */
-  .split-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: center;
-    margin-top: 80px;
-  }
-  .split-visual {
-    aspect-ratio: 1;
-    border: 1px solid var(--off3);
-    position: relative;
-    overflow: hidden;
-    border-radius: 2px;
-  }
-  .split-visual-inner {
+  #terra-card::before {
+    content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 40% 40%, rgba(42,111,212,0.12), transparent 70%),
-                linear-gradient(135deg, #000510, #000a1e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: linear-gradient(135deg, rgba(42,111,212,0.06) 0%, transparent 60%);
+    pointer-events: none;
   }
-  .orbit-rings {
-    position: relative;
-    width: 200px;
-    height: 200px;
-  }
-  .orbit-ring {
-    position: absolute;
-    border: 1px solid var(--off3);
-    border-radius: 50%;
-    animation: rotate linear infinite;
-  }
-  .orbit-ring:nth-child(1) { inset: 0; animation-duration: 20s; }
-  .orbit-ring:nth-child(2) { inset: 20px; animation-duration: 14s; animation-direction: reverse; border-color: rgba(42,111,212,0.2); }
-  .orbit-ring:nth-child(3) { inset: 45px; animation-duration: 9s; border-color: rgba(42,111,212,0.15); }
-  .orbit-center {
-    position: absolute;
-    inset: 70px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #1a4fa3, #0a1a40);
-    box-shadow: 0 0 30px rgba(42,111,212,0.4), 0 0 60px rgba(42,111,212,0.15);
-  }
-  .orbit-dot {
-    position: absolute;
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--blue);
-    top: 50%; left: 0;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 8px var(--blue);
-  }
-  .split-text { display: flex; flex-direction: column; gap: 24px; }
-  .split-body {
-    font-size: 11px;
-    line-height: 2.1;
-    color: var(--off);
-    letter-spacing: 0.04em;
-  }
-  .data-row {
+
+  /* Card Header */
+  .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--off3);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    color: var(--off);
-    text-transform: uppercase;
-  }
-  .data-row-val {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    color: var(--white);
-    font-weight: 300;
-  }
-
-  /* --- CTA --- */
-  .cta-section {
-    text-align: center;
-    padding: 160px 48px;
+    padding: 0 24px;
+    height: var(--card-h-collapsed);
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
     position: relative;
-    overflow: hidden;
   }
-  .cta-section::before {
+  .card-header::after {
     content: '';
     position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 50% 50%, rgba(42,111,212,0.08), transparent 65%);
-    pointer-events: none;
-  }
-  .cta-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(48px, 8vw, 100px);
-    font-weight: 300;
-    line-height: 1;
-    margin-bottom: 32px;
-  }
-  .cta-title em { font-style: italic; color: var(--off); display: block; }
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 40px;
-    border: 1px solid rgba(42,111,212,0.5);
-    background: transparent;
-    color: var(--white);
-    font-family: 'Geist Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    text-decoration: none;
-    cursor: none;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .btn-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--blue-dim), var(--blue));
+    bottom: 0; left: 24px; right: 24px;
+    height: 1px;
+    background: var(--off3);
     opacity: 0;
     transition: opacity 0.3s;
   }
-  .btn-primary:hover::before { opacity: 1; }
-  .btn-primary span { position: relative; z-index: 1; }
-  .btn-primary:hover { border-color: var(--blue); box-shadow: 0 0 30px var(--blue-glow); }
+  #terra-card.expanded .card-header::after { opacity: 1; }
 
-  /* --- FOOTER --- */
-  footer {
-    border-top: 1px solid var(--off3);
-    padding: 40px 48px;
+  .card-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .card-title {
+    font-family: 'Geist Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    color: var(--white);
+    text-transform: uppercase;
+  }
+  .card-title-sep {
+    width: 1px;
+    height: 14px;
+    background: var(--off2);
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .card-subtitle {
+    font-size: 8px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    opacity: 0.85;
+  }
+
+  .card-header-right {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 20px;
   }
-  .footer-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    color: var(--off2);
-  }
-  .footer-copy {
-    font-size: 8px;
-    letter-spacing: 0.3em;
-    color: var(--off2);
-    text-transform: uppercase;
-  }
-  .footer-links {
+  .card-status {
     display: flex;
-    gap: 28px;
-    list-style: none;
-  }
-  .footer-links a {
+    align-items: center;
+    gap: 6px;
     font-size: 8px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--off2);
-    text-decoration: none;
-    transition: color 0.3s;
+    color: rgba(240,238,234,0.35);
   }
-  .footer-links a:hover { color: var(--white); }
+  .status-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+    animation: pulse-green 2s ease-in-out infinite;
+  }
 
-  /* --- DIVIDER --- */
-  .divider {
-    width: 100%;
-    height: 1px;
+  .expand-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border-bright);
     background: var(--off3);
-    max-width: 1400px;
-    margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .expand-btn svg {
+    transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  #terra-card.expanded .expand-btn svg { transform: rotate(180deg); }
+  .expand-btn:hover { border-color: var(--blue); background: var(--blue-glow); }
+
+  /* Card Body */
+  .card-body {
+    padding: 28px 24px 24px;
+    overflow-y: auto;
+    height: calc(var(--card-h-expanded) - var(--card-h-collapsed));
+    scrollbar-width: none;
+  }
+  .card-body::-webkit-scrollbar { display: none; }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 24px;
+    background: var(--off3);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 7px 4px;
+    font-size: 8px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--off);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s;
+    font-family: 'Geist Mono', monospace;
+  }
+  .tab-btn.active {
+    background: rgba(42, 111, 212, 0.22);
+    color: var(--blue-bright);
+    border: 1px solid rgba(42,111,212,0.3);
   }
 
-  /* --- ANIMATIONS --- */
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+  /* Fact rows */
+  .fact-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--off3);
+    gap: 12px;
+  }
+  .fact-row:last-child { border-bottom: none; }
+  .fact-key {
+    font-size: 8px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(240,238,234,0.35);
+    flex-shrink: 0;
+  }
+  .fact-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--white);
+    text-align: right;
+  }
+  .fact-val em { font-style: italic; color: var(--off); font-size: 13px; }
+
+  /* Mini bar chart for atmosphere */
+  .atm-bar-wrap {
+    margin-top: 18px;
+  }
+  .atm-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .atm-name {
+    font-size: 8px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--off);
+    width: 56px;
+    flex-shrink: 0;
+  }
+  .atm-track {
+    flex: 1;
+    height: 3px;
+    background: var(--off3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .atm-fill {
+    height: 100%;
+    border-radius: 2px;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .atm-pct {
+    font-size: 9px;
+    color: var(--off);
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* Orbit timeline visual */
+  .orbit-visual {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .orbit-cell {
+    background: var(--off3);
+    border: 1px solid var(--off3);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .orbit-cell:hover { border-color: var(--glass-border-bright); }
+  .orbit-cell-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--white);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .orbit-cell-key {
+    font-size: 7px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(240,238,234,0.3);
+  }
+
+  /* ── CONTROLS HINT ── */
+  #controls-hint {
+    position: absolute;
+    bottom: 142px;
+    right: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s ease 2.4s forwards;
+  }
+  .hint-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 8px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(240,238,234,0.28);
+  }
+  .hint-key {
+    width: 22px; height: 22px;
+    border: 1px solid var(--off3);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    color: rgba(240,238,234,0.3);
+    flex-shrink: 0;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateY(-50%) translateX(-12px); }
+    to { opacity: 1; transform: translateY(-50%) translateX(0); }
+  }
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes scrollPulse {
-    0%, 100% { opacity: 0.3; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(1.1); }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
-  @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-  /* --- REVEAL ON SCROLL --- */
-  .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.9s ease, transform 0.9s ease;
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px #22c55e; }
+    50% { opacity: 0.5; box-shadow: 0 0 2px #22c55e; }
   }
-  .reveal.visible { opacity: 1; transform: none; }
+  @keyframes spin-ring {
+    to { transform: rotate(360deg); }
+  }
 
-  @media (max-width: 768px) {
-    nav { padding: 20px 24px; }
-    .nav-links { display: none; }
-    section { padding: 80px 24px; }
-    .stats-bar { grid-template-columns: repeat(2, 1fr); }
-    .features-grid { grid-template-columns: 1fr; }
-    .split-layout { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 20px; text-align: center; }
-    .footer-links { justify-content: center; }
+  /* ── LOADING SCREEN ── */
+  #loader {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    transition: opacity 0.8s ease;
+  }
+  #loader.done { opacity: 0; pointer-events: none; }
+  .loader-ring {
+    width: 48px; height: 48px;
+    border: 1px solid var(--off3);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin-ring 1s linear infinite;
+  }
+  .loader-text {
+    font-size: 8px;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--off);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    #side-readout { display: none; }
+    #controls-hint { display: none; }
+    #coord-badge { top: 72px; right: 16px; }
+    #topbar { padding: 18px 20px; }
+    #terra-card { bottom: 20px; }
+    :root { --card-h-expanded: 56vh; }
   }
 </style>
 </head>
 <body>
 
-<!-- Cursor -->
+<!-- Loader -->
+<div id="loader">
+  <div class="loader-ring"></div>
+  <p class="loader-text">Initialising Terra</p>
+</div>
+
+<!-- Custom Cursor -->
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- Nav -->
-<nav>
-  <a href="#" class="nav-logo">TER<span>RA</span></a>
-  <ul class="nav-links">
-    <li><a href="#observatory">Observatory</a></li>
-    <li><a href="#about">Science</a></li>
-    <li><a href="#data">Live Data</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
+<!-- Globe Canvas -->
+<canvas id="globe-canvas"></canvas>
 
-<!-- Hero -->
-<section id="hero">
-  <canvas id="globe-canvas"></canvas>
-  <div class="hero-content">
-    <p class="hero-eyebrow">Sol III · Earth Observatory</p>
-    <h1 class="hero-title">OUR<br/><em>WORLD</em></h1>
-    <p class="hero-sub">A real-time photorealistic rendering of Earth — day, night, clouds, and the pale blue glow of atmosphere.</p>
-  </div>
-  <div class="scroll-hint">
-    <span>Explore</span>
-    <div class="scroll-line"></div>
-  </div>
-</section>
+<!-- Full Overlay (pointer-events: none) -->
+<div id="overlay">
 
-<!-- Stats Bar -->
-<div class="stats-bar reveal" id="observatory">
-  <div class="stat">
-    <div class="stat-value">12,742<sup>km</sup></div>
-    <div class="stat-label">Diameter</div>
+  <!-- Top Bar -->
+  <div id="topbar">
+    <a href="#" class="nav-logo">LUM<span>inar</span></a>
+    <div class="nav-right">
+      <a href="#" class="nav-pill active">/earth</a>
+      <a href="#" class="nav-pill">/mars</a>
+      <a href="#" class="nav-pill">/system</a>
+    </div>
   </div>
-  <div class="stat">
-    <div class="stat-value">510M<sup>km²</sup></div>
-    <div class="stat-label">Surface Area</div>
-  </div>
-  <div class="stat">
-    <div class="stat-value">29.78<sup>km/s</sup></div>
-    <div class="stat-label">Orbital Speed</div>
-  </div>
-  <div class="stat">
-    <div class="stat-value">4.54<sup>Gy</sup></div>
-    <div class="stat-label">Age</div>
-  </div>
-</div>
 
-<!-- Features -->
-<section>
-  <p class="section-tag reveal">Rendering Technology</p>
-  <h2 class="section-title reveal">Built with<br/><em>cinematic precision</em></h2>
-  <div class="features-grid">
-    <div class="feature-card reveal">
-      <span class="feature-number">01</span>
-      <div class="feature-icon">◑</div>
-      <h3 class="feature-title">Day / Night Shader</h3>
-      <p class="feature-desc">A custom GLSL fragment shader blends sunlit continents into city-lit darkness across a soft, geographically accurate terminator line.</p>
+  <!-- Left Side Readout -->
+  <div id="side-readout">
+    <div class="readout-item">
+      <span class="readout-label">Surface Temp</span>
+      <span class="readout-value live" id="temp-val">+14.9 °C</span>
     </div>
-    <div class="feature-card reveal">
-      <span class="feature-number">02</span>
-      <div class="feature-icon">☁</div>
-      <h3 class="feature-title">Live Cloud Layer</h3>
-      <p class="feature-desc">A semi-transparent cloud sphere rotates independently above the surface, casting atmospheric depth on the terrain below.</p>
+    <div class="readout-divider"></div>
+    <div class="readout-item">
+      <span class="readout-label">Rotation</span>
+      <span class="readout-value">23h 56m</span>
     </div>
-    <div class="feature-card reveal">
-      <span class="feature-number">03</span>
-      <div class="feature-icon">◎</div>
-      <h3 class="feature-title">Atmosphere Glow</h3>
-      <p class="feature-desc">Dual-layer additive rim lighting simulates Rayleigh scattering — that unmistakable pale blue halo visible from low orbit.</p>
+    <div class="readout-divider"></div>
+    <div class="readout-item">
+      <span class="readout-label">Tilt</span>
+      <span class="readout-value">23.44°</span>
     </div>
-    <div class="feature-card reveal">
-      <span class="feature-number">04</span>
-      <div class="feature-icon">✦</div>
-      <h3 class="feature-title">12,000 Stars</h3>
-      <p class="feature-desc">A randomized star field with subtle twinkle animation places Earth in its true cosmic context, deep in the void.</p>
-    </div>
-    <div class="feature-card reveal">
-      <span class="feature-number">05</span>
-      <div class="feature-icon">⟳</div>
-      <h3 class="feature-title">Physics-Based Rotation</h3>
-      <p class="feature-desc">Inertia decay and smooth damping on all drag gestures. Auto-rotation resumes after interaction ends.</p>
-    </div>
-    <div class="feature-card reveal">
-      <span class="feature-number">06</span>
-      <div class="feature-icon">◈</div>
-      <h3 class="feature-title">Specular Ocean</h3>
-      <p class="feature-desc">Blinn-Phong water highlights pick out ocean surfaces with a realistic specular sheen under the simulated sun.</p>
+    <div class="readout-divider"></div>
+    <div class="readout-item">
+      <span class="readout-label">Satellites</span>
+      <span class="readout-value live">1</span>
     </div>
   </div>
-</section>
 
-<div class="divider"></div>
+  <!-- Coordinate Badge (top-right) -->
+  <div id="coord-badge">
+    <div class="coord-row">
+      <span class="coord-label">Lat</span>
+      <span class="coord-val" id="lat-val">+23.44°</span>
+    </div>
+    <div class="coord-sep"></div>
+    <div class="coord-row">
+      <span class="coord-label">Lon</span>
+      <span class="coord-val" id="lon-val">+000.00°</span>
+    </div>
+    <div class="coord-sep"></div>
+    <div class="coord-row">
+      <span class="coord-label">Alt</span>
+      <span class="coord-val" id="alt-val">400 km</span>
+    </div>
+  </div>
 
-<!-- About / Split -->
-<section id="about">
-  <div class="split-layout">
-    <div class="split-visual reveal">
-      <div class="split-visual-inner">
-        <div class="orbit-rings">
-          <div class="orbit-ring"><div class="orbit-dot"></div></div>
-          <div class="orbit-ring"><div class="orbit-dot" style="top:0;left:50%;background:#4a90d9;box-shadow:0 0 8px #4a90d9;"></div></div>
-          <div class="orbit-ring"><div class="orbit-dot" style="top:50%;left:100%;background:#7ab8f5;box-shadow:0 0 8px #7ab8f5;"></div></div>
-          <div class="orbit-center"></div>
+  <!-- Controls Hint -->
+  <div id="controls-hint">
+    <div class="hint-item">
+      <div class="hint-key">⇥</div>
+      <span>Drag to rotate</span>
+    </div>
+    <div class="hint-item">
+      <div class="hint-key">↕</div>
+      <span>Scroll to zoom</span>
+    </div>
+  </div>
+
+  <!-- Floating Terra Card -->
+  <div id="terra-card">
+    <div class="card-header" id="card-toggle">
+      <div class="card-title-group">
+        <span class="card-title">TERRA</span>
+        <div class="card-title-sep"></div>
+        <span class="card-subtitle">01 — Earth</span>
+      </div>
+      <div class="card-header-right">
+        <div class="card-status">
+          <div class="status-dot"></div>
+          <span>Live</span>
+        </div>
+        <div class="expand-btn" id="expand-btn">
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+            <path d="M1 5L5 1L9 5" stroke="rgba(240,238,234,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
       </div>
     </div>
-    <div class="split-text reveal">
-      <p class="section-tag">About This Project</p>
-      <h2 class="section-title">Earth,<br/><em>rendered true</em></h2>
-      <p class="split-body">
-        TERRA is a WebGL-powered Earth visualization built with Three.js and driven by NASA texture data. Every pixel of the surface — from the Sahara's ochre to the Amazon's green — is sourced from real satellite imagery.
-      </p>
-      <p class="split-body">
-        The goal was singular: make it feel real. Not a diagram, not a toy globe — but something that makes you hold your breath for a moment.
-      </p>
-      <div>
-        <div class="data-row">
-          <span>Sphere Segments</span>
-          <span class="data-row-val">128 × 128</span>
+
+    <div class="card-body">
+      <!-- Tab Navigation -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="atmosphere">Atmosphere</button>
+        <button class="tab-btn" data-tab="mass">Mass</button>
+        <button class="tab-btn" data-tab="orbit">Orbit</button>
+      </div>
+
+      <!-- Atmosphere Panel -->
+      <div class="tab-panel active" id="tab-atmosphere">
+        <div class="fact-row">
+          <span class="fact-key">Composition</span>
+          <span class="fact-val">N₂ + O₂ <em>dominant</em></span>
         </div>
-        <div class="data-row">
-          <span>Rendering</span>
-          <span class="data-row-val">ACES Filmic</span>
+        <div class="fact-row">
+          <span class="fact-key">Pressure (sea level)</span>
+          <span class="fact-val">101.325 <em>kPa</em></span>
         </div>
-        <div class="data-row">
-          <span>Texture Resolution</span>
-          <span class="data-row-val">8192 × 4096</span>
+        <div class="fact-row">
+          <span class="fact-key">Thickness</span>
+          <span class="fact-val">~10,000 <em>km</em></span>
         </div>
-        <div class="data-row">
-          <span>Shader Language</span>
-          <span class="data-row-val">GLSL ES 3.0</span>
+        <div class="atm-bar-wrap">
+          <div class="atm-row">
+            <span class="atm-name">Nitrogen</span>
+            <div class="atm-track"><div class="atm-fill" style="width:78%;background:#4a9fff;" data-width="0.78"></div></div>
+            <span class="atm-pct">78.1%</span>
+          </div>
+          <div class="atm-row">
+            <span class="atm-name">Oxygen</span>
+            <div class="atm-track"><div class="atm-fill" style="width:21%;background:#22c55e;" data-width="0.21"></div></div>
+            <span class="atm-pct">20.9%</span>
+          </div>
+          <div class="atm-row">
+            <span class="atm-name">Argon</span>
+            <div class="atm-track"><div class="atm-fill" style="width:0.93%;background:#a78bfa;" data-width="0.0093"></div></div>
+            <span class="atm-pct">0.93%</span>
+          </div>
+          <div class="atm-row">
+            <span class="atm-name">CO₂</span>
+            <div class="atm-track"><div class="atm-fill" style="width:0.04%;background:#f97316;" data-width="0.0004"></div></div>
+            <span class="atm-pct">0.04%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mass Panel -->
+      <div class="tab-panel" id="tab-mass">
+        <div class="fact-row">
+          <span class="fact-key">Total Mass</span>
+          <span class="fact-val">5.972 × 10²⁴ <em>kg</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Mean Density</span>
+          <span class="fact-val">5,514 <em>kg/m³</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Equatorial Radius</span>
+          <span class="fact-val">6,378 <em>km</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Polar Radius</span>
+          <span class="fact-val">6,357 <em>km</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Surface Gravity</span>
+          <span class="fact-val">9.807 <em>m/s²</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Escape Velocity</span>
+          <span class="fact-val">11.186 <em>km/s</em></span>
+        </div>
+      </div>
+
+      <!-- Orbit Panel -->
+      <div class="tab-panel" id="tab-orbit">
+        <div class="fact-row">
+          <span class="fact-key">Semi-major Axis</span>
+          <span class="fact-val">149.598 <em>× 10⁶ km</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Eccentricity</span>
+          <span class="fact-val">0.0167</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Orbital Speed</span>
+          <span class="fact-val">29.78 <em>km/s</em></span>
+        </div>
+        <div class="orbit-visual">
+          <div class="orbit-cell">
+            <span class="orbit-cell-val">365.25</span>
+            <span class="orbit-cell-key">Days / Year</span>
+          </div>
+          <div class="orbit-cell">
+            <span class="orbit-cell-val">23.44</span>
+            <span class="orbit-cell-key">Axial Tilt °</span>
+          </div>
+          <div class="orbit-cell">
+            <span class="orbit-cell-val">1.521</span>
+            <span class="orbit-cell-key">Aphelion AU</span>
+          </div>
+          <div class="orbit-cell">
+            <span class="orbit-cell-val">1.471</span>
+            <span class="orbit-cell-key">Perihelion AU</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- CTA -->
-<div class="cta-section" id="contact">
-  <h2 class="cta-title reveal">
-    Look up.<br/>
-    <em>We are here.</em>
-  </h2>
-  <a href="#hero" class="btn-primary reveal">
-    <span>↑ Return to Earth</span>
-  </a>
-</div>
+</div><!-- /overlay -->
 
-<!-- Footer -->
-<footer>
-  <div class="footer-logo">TERRA</div>
-  <p class="footer-copy">© 2026 — Earth Observatory</p>
-  <ul class="footer-links">
-    <li><a href="#">GitHub</a></li>
-    <li><a href="#">Three.js</a></li>
-    <li><a href="#">NASA</a></li>
-  </ul>
-</footer>
-
-<!-- Scripts -->
 <script type="importmap">
 {
   "imports": {
@@ -690,49 +756,38 @@
 <script type="module">
 import * as THREE from 'three';
 
-// ---- Cursor ----
+// ── Cursor ──
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
 let mx = 0, my = 0, rx = 0, ry = 0;
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 (function animCursor() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
+  rx += (mx - rx) * 0.14;
+  ry += (my - ry) * 0.14;
   cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
   ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
   requestAnimationFrame(animCursor);
 })();
+document.querySelectorAll('a, button, .expand-btn, .tab-btn, .nav-pill, .orbit-cell').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+});
 
-// ---- Scroll Reveal ----
-const reveals = document.querySelectorAll('.reveal');
-const obs = new IntersectionObserver(entries => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('visible'), i * 80);
-      obs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
-reveals.forEach(el => obs.observe(el));
-
-// ---- Globe ----
+// ── Globe Setup ──
 const canvas = document.getElementById('globe-canvas');
-const container = document.getElementById('hero');
-
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000);
 
-const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 10000);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
 camera.position.z = 280;
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 
 const loader = new THREE.TextureLoader();
-const loadTex = url => new Promise(res => loader.load(url, res));
+const loadTex = url => new Promise((res, rej) => loader.load(url, res, undefined, rej));
 
 Promise.all([
   loadTex('https://unpkg.com/three-globe/example/img/earth-day.jpg'),
@@ -741,7 +796,10 @@ Promise.all([
   loadTex('https://unpkg.com/three-globe/example/img/earth-topology.png'),
 ]).then(([dayTex, nightTex, cloudsTex, bumpTex]) => {
 
-  // Earth
+  // Dismiss loader
+  setTimeout(() => document.getElementById('loader').classList.add('done'), 400);
+
+  // ── Earth ──
   const earthGeo = new THREE.SphereGeometry(100, 128, 128);
   const earthMat = new THREE.ShaderMaterial({
     uniforms: {
@@ -771,16 +829,16 @@ Promise.all([
       void main() {
         vec3 normal = normalize(vNormal);
         float sunDot = dot(normal, sunDirection);
-        float dayFactor = smoothstep(-0.15, 0.25, sunDot);
+        float dayFactor = smoothstep(-0.15, 0.28, sunDot);
         vec4 dayColor = texture2D(dayTexture, vUv);
         vec4 nightColor = texture2D(nightTexture, vUv);
-        nightColor.rgb *= 1.6;
+        nightColor.rgb *= 1.7;
         vec3 viewDir = normalize(cameraPosition - vPosition);
         vec3 halfDir = normalize(sunDirection + viewDir);
-        float spec = pow(max(dot(normal, halfDir), 0.0), 80.0);
+        float spec = pow(max(dot(normal, halfDir), 0.0), 90.0);
         vec4 finalColor = mix(nightColor, dayColor, dayFactor);
         float waterMask = clamp(1.0 - dayColor.r * 0.6 - dayColor.g * 0.3, 0.0, 1.0);
-        finalColor.rgb += spec * waterMask * 0.4 * dayFactor;
+        finalColor.rgb += spec * waterMask * 0.45 * dayFactor;
         gl_FragColor = finalColor;
       }
     `,
@@ -788,14 +846,14 @@ Promise.all([
   const earth = new THREE.Mesh(earthGeo, earthMat);
   scene.add(earth);
 
-  // Clouds
+  // ── Clouds ──
   const clouds = new THREE.Mesh(
-    new THREE.SphereGeometry(101.5, 64, 64),
-    new THREE.MeshPhongMaterial({ map: cloudsTex, transparent: true, opacity: 0.85, depthWrite: false })
+    new THREE.SphereGeometry(101.8, 64, 64),
+    new THREE.MeshPhongMaterial({ map: cloudsTex, transparent: true, opacity: 0.82, depthWrite: false })
   );
   scene.add(clouds);
 
-  // Atmosphere
+  // ── Atmosphere Glow ──
   const makeGlow = (radius, color, side, intensity, power) => {
     const mat = new THREE.ShaderMaterial({
       uniforms: { glowColor: { value: new THREE.Color(color) }, viewVector: { value: camera.position } },
@@ -807,34 +865,39 @@ Promise.all([
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }`,
       fragmentShader: `uniform vec3 glowColor; varying float intensity;
-        void main() { gl_FragColor = vec4(glowColor * intensity, intensity * 0.8); }`,
+        void main() { gl_FragColor = vec4(glowColor * intensity, intensity * 0.85); }`,
       side, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
     });
     scene.add(new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 64), mat));
     return mat;
   };
-  const atmMat = makeGlow(103, 0x1a6edc, THREE.FrontSide, 0.65, 3.0);
-  const outerMat = makeGlow(109, 0x0a3a8c, THREE.BackSide, 0.4, 4.0);
+  const atmMat = makeGlow(103.5, 0x1a6edc, THREE.FrontSide, 0.65, 3.0);
+  const outerMat = makeGlow(110, 0x0a3a8c, THREE.BackSide, 0.4, 4.0);
 
-  // Stars
-  const sp = new Float32Array(12000 * 3);
+  // ── Stars ──
+  const sp = new Float32Array(14000 * 3);
   for (let i = 0; i < sp.length; i++) sp[i] = (Math.random() - 0.5) * 8000;
   const starGeo = new THREE.BufferGeometry();
   starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-  const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.85 });
+  const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.75, transparent: true, opacity: 0.8 });
   scene.add(new THREE.Points(starGeo, starMat));
 
-  // Lights
-  const sun = new THREE.DirectionalLight(0xfff5e0, 2.2);
+  // ── Lights ──
+  const sun = new THREE.DirectionalLight(0xfff5e0, 2.4);
   sun.position.set(200, 60, 100);
   scene.add(sun);
-  scene.add(new THREE.AmbientLight(0x111133, 0.5));
+  scene.add(new THREE.AmbientLight(0x111133, 0.4));
 
-  // Controls
-  let dragging = false, px = 0, py = 0, vx = 0, vy = 0, userActive = false, userTimer;
+  // ── Interaction ──
+  let dragging = false, px = 0, py = 0, vx = 0, vy = 0;
+  let userActive = false, userTimer;
   let targetZ = 280;
 
-  renderer.domElement.addEventListener('mousedown', e => { dragging = true; userActive = true; px = e.clientX; py = e.clientY; vx = vy = 0; });
+  // Mouse drag — attach to window so dragging outside canvas still works
+  canvas.addEventListener('mousedown', e => {
+    dragging = true; userActive = true;
+    px = e.clientX; py = e.clientY; vx = vy = 0;
+  });
   window.addEventListener('mousemove', e => {
     if (!dragging) return;
     const dx = e.clientX - px, dy = e.clientY - py;
@@ -842,48 +905,127 @@ Promise.all([
     earth.rotation.x += vx; earth.rotation.y += vy;
     clouds.rotation.x += vx; clouds.rotation.y += vy;
     px = e.clientX; py = e.clientY;
+    updateCoords();
   });
-  window.addEventListener('mouseup', () => { dragging = false; clearTimeout(userTimer); userTimer = setTimeout(() => userActive = false, 1000); });
-  renderer.domElement.addEventListener('wheel', e => { e.preventDefault(); targetZ = Math.max(140, Math.min(500, targetZ + e.deltaY * 0.3)); }, { passive: false });
+  window.addEventListener('mouseup', () => {
+    dragging = false;
+    clearTimeout(userTimer);
+    userTimer = setTimeout(() => userActive = false, 1200);
+  });
+
+  // Scroll zoom
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    targetZ = Math.max(130, Math.min(520, targetZ + e.deltaY * 0.28));
+    updateAlt();
+  }, { passive: false });
 
   // Touch
   let lp = null;
-  renderer.domElement.addEventListener('touchstart', e => { dragging = true; userActive = true; px = e.touches[0].clientX; py = e.touches[0].clientY; });
-  renderer.domElement.addEventListener('touchmove', e => {
+  canvas.addEventListener('touchstart', e => {
+    dragging = true; userActive = true;
+    px = e.touches[0].clientX; py = e.touches[0].clientY;
+  });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
     if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.sqrt(dx*dx+dy*dy);
-      if (lp) { targetZ = Math.max(140, Math.min(500, targetZ - (dist - lp) * 0.8)); }
-      lp = dist;
+      const d = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (lp) { targetZ = Math.max(130, Math.min(520, targetZ - (d - lp) * 0.8)); updateAlt(); }
+      lp = d;
     } else if (dragging) {
       const ddx = e.touches[0].clientX - px, ddy = e.touches[0].clientY - py;
       earth.rotation.x += ddy * 0.003; earth.rotation.y += ddx * 0.003;
       clouds.rotation.x += ddy * 0.003; clouds.rotation.y += ddx * 0.003;
       px = e.touches[0].clientX; py = e.touches[0].clientY;
+      updateCoords();
     }
-  });
-  renderer.domElement.addEventListener('touchend', () => { dragging = false; lp = null; setTimeout(() => userActive = false, 1000); });
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { dragging = false; lp = null; setTimeout(() => userActive = false, 1200); });
 
+  // Resize
   window.addEventListener('resize', () => {
-    const w = container.clientWidth, h = container.clientHeight;
-    camera.aspect = w / h; camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
+  // ── Coordinate Readout ──
+  function updateCoords() {
+    const lat = (earth.rotation.x * (180 / Math.PI)) % 180;
+    const lon = (earth.rotation.y * (180 / Math.PI)) % 360;
+    document.getElementById('lat-val').textContent = (lat >= 0 ? '+' : '') + lat.toFixed(2) + '°';
+    document.getElementById('lon-val').textContent = (lon >= 0 ? '+' : '') + lon.toFixed(2) + '°';
+  }
+  function updateAlt() {
+    const km = Math.round((targetZ - 100) * 2.8);
+    document.getElementById('alt-val').textContent = km.toLocaleString() + ' km';
+  }
+  updateAlt();
+
+  // ── Animate loop ──
   let t = 0;
   (function animate() {
     requestAnimationFrame(animate);
     t += 0.005;
-    if (!userActive) { earth.rotation.y += 0.0012; clouds.rotation.y += 0.0014; }
-    else { vx *= 0.92; vy *= 0.92; earth.rotation.x += vx*0.2; earth.rotation.y += vy*0.2; clouds.rotation.x += vx*0.2; clouds.rotation.y += vy*0.2; }
-    clouds.rotation.y += 0.0002;
-    camera.position.z += (targetZ - camera.position.z) * 0.08;
+    if (!userActive) {
+      earth.rotation.y += 0.0012;
+      clouds.rotation.y += 0.0014;
+    } else {
+      vx *= 0.91; vy *= 0.91;
+      earth.rotation.x += vx * 0.18; earth.rotation.y += vy * 0.18;
+      clouds.rotation.x += vx * 0.18; clouds.rotation.y += vy * 0.18;
+    }
+    clouds.rotation.y += 0.00018;
+    camera.position.z += (targetZ - camera.position.z) * 0.07;
     atmMat.uniforms.viewVector.value.copy(camera.position);
     outerMat.uniforms.viewVector.value.copy(camera.position);
-    starMat.opacity = 0.7 + Math.sin(t * 1.3) * 0.12;
+    starMat.opacity = 0.68 + Math.sin(t * 1.1) * 0.1;
     renderer.render(scene, camera);
   })();
+
+}).catch(err => {
+  console.error('Texture load failed:', err);
+  document.getElementById('loader').querySelector('.loader-text').textContent = 'Load error';
+});
+
+// ── Card Expand / Collapse ──
+const card = document.getElementById('terra-card');
+const toggle = document.getElementById('card-toggle');
+
+toggle.addEventListener('click', () => {
+  card.classList.toggle('expanded');
+  // Animate atmosphere bars when expanding
+  if (card.classList.contains('expanded')) {
+    setTimeout(() => {
+      document.querySelectorAll('.atm-fill').forEach(bar => {
+        const w = parseFloat(bar.dataset.width);
+        bar.style.transform = `scaleX(${w})`;
+      });
+    }, 80);
+  }
+});
+
+// ── Tab Switching ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+
+    // Trigger bar animations for atmosphere tab
+    if (btn.dataset.tab === 'atmosphere') {
+      setTimeout(() => {
+        document.querySelectorAll('.atm-fill').forEach(bar => {
+          bar.style.transform = 'scaleX(0)';
+          setTimeout(() => { bar.style.transform = `scaleX(${parseFloat(bar.dataset.width)})`; }, 50);
+        });
+      }, 50);
+    }
+  });
 });
 </script>
 </body>
