@@ -4,6 +4,18 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>LUMINAR — /earth</title>
+<link rel="icon" type="image/png" href="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
+<link rel="apple-touch-icon" href="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
+<meta name="description" content="LUMINAR — An interactive 3D Earth visualization with orbital data, atmospheric composition, and planetary facts."/>
+<meta property="og:title" content="LUMINAR — /earth"/>
+<meta property="og:description" content="An interactive 3D Earth visualization with orbital data, atmospheric composition, and planetary facts."/>
+<meta property="og:image" content="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://luminar.kal.how"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="LUMINAR — /earth"/>
+<meta name="twitter:description" content="An interactive 3D Earth visualization with orbital data, atmospheric composition, and planetary facts."/>
+<meta name="twitter:image" content="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@100;300;400;500&family=Cinzel:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -21,7 +33,7 @@
     --glass-border: rgba(240, 238, 234, 0.1);
     --glass-border-bright: rgba(240, 238, 234, 0.22);
     --card-h-collapsed: 88px;
-    --card-h-expanded: 54vh;
+    --card-h-expanded: auto;
   }
 
   *,
@@ -283,7 +295,7 @@
     -webkit-backdrop-filter: blur(32px) saturate(180%);
     border-radius: 22px;
     overflow: hidden;
-    transition: height 0.5s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s, box-shadow 0.3s;
+    transition: border-color 0.3s, box-shadow 0.3s;
     height: var(--card-h-collapsed);
     opacity: 0;
     animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) 1.8s forwards;
@@ -291,9 +303,9 @@
     box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 0 0 transparent;
   }
   #terra-card.expanded {
-    height: var(--card-h-expanded);
     border-color: rgba(74, 159, 255, 0.3);
     box-shadow: 0 4px 60px rgba(0,0,0,0.6), 0 0 40px rgba(42,111,212,0.08);
+    overflow: hidden;
   }
   #terra-card::before {
     content: '';
@@ -424,7 +436,7 @@
   .card-body {
     padding: 28px 24px 24px;
     overflow-y: auto;
-    height: calc(var(--card-h-expanded) - var(--card-h-collapsed));
+    max-height: calc(56vh - var(--card-h-collapsed));
     scrollbar-width: none;
   }
   .card-body::-webkit-scrollbar {
@@ -717,7 +729,8 @@
     }
     #coord-badge {
       top: auto;
-      bottom: 120px;
+      bottom: auto;
+      top: 68px;
       right: 12px;
       left: auto;
       min-width: 140px;
@@ -753,7 +766,6 @@
     }
     :root {
       --card-h-collapsed: 76px;
-      --card-h-expanded: 62vh;
     }
     .card-title {
       font-size: 11px;
@@ -771,6 +783,7 @@
     }
     .card-body {
       padding: 20px 16px 16px;
+      max-height: calc(60vh - var(--card-h-collapsed));
     }
     .tab-btn {
       font-size: 7px;
@@ -781,9 +794,7 @@
       transform: translateY(-4vh) scale(0.93);
     }
     #footer-copyright {
-      bottom: 6px;
-      font-size: 7px;
-      letter-spacing: 0.18em;
+      display: none;
     }
     .orbit-visual {
       grid-template-columns: repeat(2, 1fr);
@@ -1160,9 +1171,10 @@
   text-transform: uppercase;
   color: rgba(240,238,234,0.28);
   pointer-events: none;
-  z-index: 20;
+  z-index: 5;
   white-space: nowrap;
   user-select: none;
+  transition: opacity 0.3s;
 ">© 2026 itztrmin. All rights reserved.</div>
 
 <script type="importmap">
@@ -1374,7 +1386,7 @@ Promise.all([
   const equatorPoints = [];
   for (let i = 0; i <= 256; i++) {
     const angle = (i / 256) * Math.PI * 2;
-    equatorPoints.push(new THREE.Vector3(Math.cos(angle) * 101.2, 0, Math.sin(angle) * 101.2));
+    equatorPoints.push(new THREE.Vector3(Math.cos(angle) * 112, 0, Math.sin(angle) * 112));
   }
   const equatorLinGeo = new THREE.BufferGeometry().setFromPoints(equatorPoints);
   const equatorLinMat = new THREE.LineBasicMaterial({
@@ -1382,17 +1394,19 @@ Promise.all([
     transparent: true,
     opacity: 0,
     depthWrite: false,
+    depthTest: false,
     blending: THREE.AdditiveBlending,
   });
   const equatorRing = new THREE.LineLoop(equatorLinGeo, equatorLinMat);
   equatorRing.visible = false;
+  equatorRing.renderOrder = 999;
   scene.add(equatorRing);
 
   // Outer glow ring (wider, softer) — also a LineLoop
   const equatorGlowPoints = [];
   for (let i = 0; i <= 256; i++) {
     const angle = (i / 256) * Math.PI * 2;
-    equatorGlowPoints.push(new THREE.Vector3(Math.cos(angle) * 102.2, 0, Math.sin(angle) * 102.2));
+    equatorGlowPoints.push(new THREE.Vector3(Math.cos(angle) * 115, 0, Math.sin(angle) * 115));
   }
   const equatorGlowGeo = new THREE.BufferGeometry().setFromPoints(equatorGlowPoints);
   const equatorGlowMat = new THREE.LineBasicMaterial({
@@ -1400,10 +1414,12 @@ Promise.all([
     transparent: true,
     opacity: 0,
     depthWrite: false,
+    depthTest: false,
     blending: THREE.AdditiveBlending,
   });
   const equatorGlow = new THREE.LineLoop(equatorGlowGeo, equatorGlowMat);
   equatorGlow.visible = false;
+  equatorGlow.renderOrder = 998;
   scene.add(equatorGlow);
 
   let equatorTargetOpacity = 0;
@@ -1613,10 +1629,22 @@ function triggerAtmBars() {
 
 function setExpanded(expanded) {
   if (expanded) {
+    // Animate to content height
+    card.style.height = card.style.height || (card.offsetHeight + 'px');
     card.classList.add('expanded');
+    // Force reflow, then let CSS auto take over
+    const body = card.querySelector('.card-body');
+    const targetH = card.querySelector('.card-header').offsetHeight + body.scrollHeight + 2;
+    const maxH = window.innerHeight * 0.70;
+    card.style.height = Math.min(targetH, maxH) + 'px';
+    card.style.transition = 'height 0.5s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s, box-shadow 0.3s';
     globeCanvas.classList.add('card-open');
     triggerAtmBars();
   } else {
+    const headerEl = card.querySelector('.card-header');
+    const collapseH = headerEl.offsetHeight + 'px';
+    card.style.transition = 'height 0.5s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s, box-shadow 0.3s';
+    card.style.height = collapseH;
     card.classList.remove('expanded');
     globeCanvas.classList.remove('card-open');
     // Fix: ensure equator ring is hidden when card collapses (unless orbit mode active)
@@ -1633,6 +1661,15 @@ expandBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   setExpanded(!card.classList.contains('expanded'));
 });
+
+// Hide footer copyright when card is expanded
+const footerEl = document.getElementById('footer-copyright');
+const observer = new MutationObserver(() => {
+  if (footerEl) {
+    footerEl.style.opacity = card.classList.contains('expanded') ? '0' : '1';
+  }
+});
+observer.observe(card, { attributes: true, attributeFilter: ['class'] });
 
 // ── Tab Switching — ORBIT tab triggers wide view + equator ring ──
 document.querySelectorAll('.tab-btn').forEach(btn => {
