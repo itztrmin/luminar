@@ -21,7 +21,7 @@
     --glass-border: rgba(240, 238, 234, 0.1);
     --glass-border-bright: rgba(240, 238, 234, 0.22);
     --card-h-collapsed: 88px;
-    --card-h-expanded: 52vh;
+    --card-h-expanded: 54vh;
   }
 
   *,
@@ -86,7 +86,12 @@
     transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
   }
   #globe-canvas.card-open {
-    transform: translateY(-10vh) scale(0.88);
+    transform: translateY(-8vh) scale(0.92);
+  }
+  @media (max-width: 600px) {
+    #globe-canvas.card-open {
+      transform: translateY(-6vh) scale(0.95);
+    }
   }
 
   /* ── OVERLAY SHELL — pointer-events: none so globe stays interactive ── */
@@ -226,17 +231,18 @@
     position: absolute;
     top: 82px;
     right: 36px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
+    background: rgba(3,7,18,0.6);
+    border: 1px solid rgba(74,159,255,0.18);
     backdrop-filter: blur(20px);
-    border-radius: 8px;
-    padding: 12px 18px;
+    border-radius: 10px;
+    padding: 14px 18px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 7px;
     opacity: 0;
     animation: fadeIn 1s ease 1.4s forwards;
     min-width: 168px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4);
   }
   .coord-row {
     display: flex;
@@ -246,20 +252,21 @@
   }
   .coord-label {
     font-size: 7px;
-    letter-spacing: 0.35em;
+    letter-spacing: 0.4em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
   }
   .coord-val {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.88);
+    letter-spacing: 0.06em;
     font-weight: 300;
+    font-variant-numeric: tabular-nums;
   }
   .coord-sep {
     width: 100%;
     height: 1px;
-    background: var(--off3);
+    background: rgba(74,159,255,0.1);
   }
 
   /* ── BOTTOM FLOATING CARD ── */
@@ -270,27 +277,45 @@
     left: 50%;
     transform: translateX(-50%);
     width: min(580px, calc(100vw - 48px));
-    background: var(--glass-bg);
+    background: rgba(3, 7, 18, 0.65);
     border: 1px solid var(--glass-border-bright);
-    backdrop-filter: blur(28px) saturate(160%);
-    -webkit-backdrop-filter: blur(28px) saturate(160%);
-    border-radius: 20px;
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border-radius: 22px;
     overflow: hidden;
-    transition: height 0.55s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s;
+    transition: height 0.5s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s, box-shadow 0.3s;
     height: var(--card-h-collapsed);
     opacity: 0;
     animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) 1.8s forwards;
     will-change: height;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 0 0 transparent;
   }
   #terra-card.expanded {
     height: var(--card-h-expanded);
-    border-color: rgba(74, 159, 255, 0.25);
+    border-color: rgba(74, 159, 255, 0.3);
+    box-shadow: 0 4px 60px rgba(0,0,0,0.6), 0 0 40px rgba(42,111,212,0.08);
   }
   #terra-card::before {
     content: '';
     position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(74,159,255,0.5), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 2;
+    pointer-events: none;
+  }
+  #terra-card.expanded::before {
+    opacity: 1;
+  }
+  #terra-card::after {
+    content: '';
+    position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(42, 111, 212, 0.06) 0%, transparent 60%);
+    background: linear-gradient(135deg, rgba(42, 111, 212, 0.04) 0%, transparent 60%);
     pointer-events: none;
   }
 
@@ -409,28 +434,33 @@
     display: flex;
     gap: 2px;
     margin-bottom: 24px;
-    background: var(--off3);
-    border-radius: 8px;
-    padding: 3px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 4px;
   }
   .tab-btn {
     flex: 1;
-    padding: 7px 4px;
+    padding: 8px 4px;
     font-size: 8px;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--off);
+    color: rgba(255,255,255,0.45);
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: 7px;
     cursor: pointer;
-    transition: background 0.25s, color 0.25s;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
     font-family: 'Geist Mono', monospace;
   }
+  .tab-btn:hover:not(.active) {
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.05);
+  }
   .tab-btn.active {
-    background: rgba(42, 111, 212, 0.22);
+    background: rgba(42, 111, 212, 0.28);
     color: var(--blue-bright);
-    border: 1px solid rgba(42, 111, 212, 0.3);
+    box-shadow: 0 0 12px rgba(42,111,212,0.2), inset 0 0 0 1px rgba(74,159,255,0.25);
   }
 
   .tab-panel {
@@ -445,18 +475,19 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding: 11px 0;
-    border-bottom: 1px solid var(--off3);
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(240,238,234,0.05);
     gap: 12px;
+    transition: background 0.2s;
   }
   .fact-row:last-child {
     border-bottom: none;
   }
   .fact-key {
     font-size: 8px;
-    letter-spacing: 0.35em;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.48);
     flex-shrink: 0;
   }
   .fact-val {
@@ -465,11 +496,12 @@
     font-weight: 300;
     color: var(--white);
     text-align: right;
+    line-height: 1.2;
   }
   .fact-val em {
     font-style: italic;
-    color: var(--off);
-    font-size: 13px;
+    color: rgba(240,238,234,0.5);
+    font-size: 12px;
   }
 
   .atm-bar-wrap {
@@ -512,35 +544,39 @@
   }
 
   .orbit-visual {
-    margin-top: 14px;
+    margin-top: 16px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
   }
   .orbit-cell {
-    background: var(--off3);
-    border: 1px solid var(--off3);
-    border-radius: 10px;
-    padding: 12px 10px;
+    background: rgba(42,111,212,0.07);
+    border: 1px solid rgba(42,111,212,0.18);
+    border-radius: 12px;
+    padding: 14px 10px;
     text-align: center;
-    transition: border-color 0.3s;
+    transition: border-color 0.25s, background 0.25s, transform 0.2s;
   }
   .orbit-cell:hover {
-    border-color: var(--glass-border-bright);
+    border-color: rgba(74,159,255,0.4);
+    background: rgba(42,111,212,0.14);
+    transform: translateY(-1px);
   }
   .orbit-cell-val {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 300;
     color: var(--white);
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
+    line-height: 1;
   }
   .orbit-cell-key {
-    font-size: 7px;
-    letter-spacing: 0.3em;
+    font-size: 6.5px;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.4;
   }
 
   /* ── CONTROLS HINT ── */
@@ -683,7 +719,7 @@
       bottom: 20px;
     }
     :root {
-      --card-h-expanded: 56vh;
+      --card-h-expanded: 58vh;
     }
   }
 </style>
@@ -1255,29 +1291,38 @@ Promise.all([
   scene.add(new THREE.AmbientLight(0x111133, 0.4));
 
   // ── Equator Ring ──
-  const equatorGeo = new THREE.TorusGeometry(100.6, 0.28, 16, 200);
-  const equatorMat = new THREE.MeshBasicMaterial({
+  // Use a LineLoop (points on a circle) instead of Torus so it's always a ring not a flat disk
+  const equatorPoints = [];
+  for (let i = 0; i <= 256; i++) {
+    const angle = (i / 256) * Math.PI * 2;
+    equatorPoints.push(new THREE.Vector3(Math.cos(angle) * 101.2, 0, Math.sin(angle) * 101.2));
+  }
+  const equatorLinGeo = new THREE.BufferGeometry().setFromPoints(equatorPoints);
+  const equatorLinMat = new THREE.LineBasicMaterial({
     color: 0x4a9fff,
     transparent: true,
     opacity: 0,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
-  const equatorRing = new THREE.Mesh(equatorGeo, equatorMat);
-  equatorRing.rotation.x = Math.PI / 2;
+  const equatorRing = new THREE.LineLoop(equatorLinGeo, equatorLinMat);
   scene.add(equatorRing);
 
-  // Outer glow ring (wider, softer)
-  const equatorGlowGeo = new THREE.TorusGeometry(101.2, 1.1, 16, 200);
-  const equatorGlowMat = new THREE.MeshBasicMaterial({
+  // Outer glow ring (wider, softer) — also a LineLoop
+  const equatorGlowPoints = [];
+  for (let i = 0; i <= 256; i++) {
+    const angle = (i / 256) * Math.PI * 2;
+    equatorGlowPoints.push(new THREE.Vector3(Math.cos(angle) * 102.2, 0, Math.sin(angle) * 102.2));
+  }
+  const equatorGlowGeo = new THREE.BufferGeometry().setFromPoints(equatorGlowPoints);
+  const equatorGlowMat = new THREE.LineBasicMaterial({
     color: 0x2a6fd4,
     transparent: true,
     opacity: 0,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
-  const equatorGlow = new THREE.Mesh(equatorGlowGeo, equatorGlowMat);
-  equatorGlow.rotation.x = Math.PI / 2;
+  const equatorGlow = new THREE.LineLoop(equatorGlowGeo, equatorGlowMat);
   scene.add(equatorGlow);
 
   let equatorTargetOpacity = 0;
@@ -1395,18 +1440,20 @@ Promise.all([
   window._orbitModeActive = false;
   window._equatorTargetOpacityReset = function() {
     equatorTargetOpacity = 0;
+    equatorLinMat.opacity = 0;
+    equatorGlowMat.opacity = 0;
   };
   window.setOrbitMode = function(active) {
     orbitModeActive = active;
     window._orbitModeActive = active;
     if (active) {
-      targetZ = 400; // wide view
+      targetZ = 380; // wide view but not too extreme
       equatorTargetOpacity = 1;
     } else {
       targetZ = 280;
       equatorTargetOpacity = 0;
       // Force immediate fade out to prevent lingering line
-      equatorMat.opacity = 0;
+      equatorLinMat.opacity = 0;
       equatorGlowMat.opacity = 0;
     }
     updateAlt();
@@ -1440,7 +1487,7 @@ Promise.all([
 
     // Equator ring pulse + fade
     const pulse = 0.7 + Math.sin(t * 2.8) * 0.3;
-    equatorMat.opacity += (equatorTargetOpacity * pulse * 0.82 - equatorMat.opacity) * 0.06;
+    equatorLinMat.opacity += (equatorTargetOpacity * pulse * 0.82 - equatorLinMat.opacity) * 0.06;
     equatorGlowMat.opacity += (equatorTargetOpacity * pulse * 0.22 - equatorGlowMat.opacity) * 0.06;
 
     atmMat.uniforms.viewVector.value.copy(camera.position);
@@ -1482,7 +1529,7 @@ function setExpanded(expanded) {
     card.classList.remove('expanded');
     globeCanvas.classList.remove('card-open');
     // Fix: ensure equator ring is hidden when card collapses (unless orbit mode active)
-    if (typeof window.setOrbitMode === 'function' && !window._orbitModeActive) {
+    if (!window._orbitModeActive) {
       if (typeof window._equatorTargetOpacityReset === 'function') {
         window._equatorTargetOpacityReset();
       }
