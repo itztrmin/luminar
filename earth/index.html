@@ -6,7 +6,7 @@
 <title>LUMINAR — /earth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@100;300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@100;300;400;500&family=Cinzel:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
     --blue: #2a6fd4;
@@ -111,18 +111,34 @@
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
   }
   .nav-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-weight: 300;
-    letter-spacing: 0.16em;
-    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 10px;
     text-decoration: none;
     opacity: 0;
     animation: fadeIn 1s ease 0.4s forwards;
   }
-  .nav-logo span {
+  .nav-logo-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: brightness(1.1);
+  }
+  .nav-logo-text {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+  .nav-logo-text span {
     font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
     color: var(--blue-bright);
+    letter-spacing: 0.1em;
   }
 
   .nav-right {
@@ -136,7 +152,7 @@
     font-size: 8px;
     letter-spacing: 0.38em;
     text-transform: uppercase;
-    color: var(--off);
+    color: rgba(255,255,255,0.75);
     padding: 6px 14px;
     border: 1px solid var(--glass-border);
     border-radius: 100px;
@@ -148,11 +164,22 @@
   }
   .nav-pill:hover {
     border-color: var(--glass-border-bright);
-    color: var(--white);
+    color: #ffffff;
   }
   .nav-pill.active {
     border-color: var(--blue);
     color: var(--blue-bright);
+  }
+  .nav-pill.dashboard {
+    color: rgba(255,255,255,0.9);
+    border-color: rgba(255,255,255,0.18);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-pill.dashboard:hover {
+    border-color: rgba(255,255,255,0.4);
+    color: #ffffff;
   }
 
   /* ── SIDE READOUT — left edge ── */
@@ -176,12 +203,12 @@
     font-size: 7px;
     letter-spacing: 0.42em;
     text-transform: uppercase;
-    color: rgba(240, 238, 234, 0.3);
+    color: rgba(255, 255, 255, 0.5);
   }
   .readout-value {
     font-size: 13px;
     letter-spacing: 0.06em;
-    color: var(--off);
+    color: rgba(255, 255, 255, 0.85);
     font-weight: 300;
   }
   .readout-value.live {
@@ -221,11 +248,11 @@
     font-size: 7px;
     letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: rgba(240, 238, 234, 0.3);
+    color: rgba(255, 255, 255, 0.5);
   }
   .coord-val {
     font-size: 11px;
-    color: var(--off);
+    color: rgba(255, 255, 255, 0.9);
     letter-spacing: 0.04em;
     font-weight: 300;
   }
@@ -333,7 +360,7 @@
     font-size: 8px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(240, 238, 234, 0.35);
+    color: rgba(255, 255, 255, 0.6);
   }
   .status-dot {
     width: 5px;
@@ -429,7 +456,7 @@
     font-size: 8px;
     letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: rgba(240, 238, 234, 0.35);
+    color: rgba(255, 255, 255, 0.55);
     flex-shrink: 0;
   }
   .fact-val {
@@ -513,7 +540,7 @@
     font-size: 7px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(240, 238, 234, 0.3);
+    color: rgba(255, 255, 255, 0.5);
   }
 
   /* ── CONTROLS HINT ── */
@@ -534,18 +561,18 @@
     font-size: 8px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(240, 238, 234, 0.28);
+    color: rgba(255, 255, 255, 0.45);
   }
   .hint-key {
     width: 22px;
     height: 22px;
-    border: 1px solid var(--off3);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 9px;
-    color: rgba(240, 238, 234, 0.3);
+    color: rgba(255, 255, 255, 0.5);
     flex-shrink: 0;
   }
 
@@ -666,7 +693,7 @@
 <!-- Loader -->
 <div id="loader">
   <div class="loader-ring"></div>
-  <p class="loader-text">Initialising Terra</p>
+  <p class="loader-text">Initialising Luminar</p>
 </div>
 
 <!-- Custom Cursor -->
@@ -681,11 +708,21 @@
 
   <!-- Top Bar -->
   <div id="topbar">
-    <a href="#" class="nav-logo">LUM<span>inar</span></a>
+    <a href="#" class="nav-logo">
+      <img src="https://www.image2url.com/r2/default/images/1777947590718-0c2fb879-6396-4ee1-8b6b-ad1c9c45e987.png" alt="Luminar" class="nav-logo-img" />
+      <span class="nav-logo-text">LUM<span>inar</span></span>
+    </a>
     <div class="nav-right">
       <a href="#" class="nav-pill active">/earth</a>
-      <a href="#" class="nav-pill">/mars</a>
-      <a href="#" class="nav-pill">/system</a>
+      <a href="/" class="nav-pill dashboard">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0.5" y="0.5" width="3.5" height="3.5" rx="0.5" stroke="currentColor" stroke-width="1"/>
+          <rect x="6" y="0.5" width="3.5" height="3.5" rx="0.5" stroke="currentColor" stroke-width="1"/>
+          <rect x="0.5" y="6" width="3.5" height="3.5" rx="0.5" stroke="currentColor" stroke-width="1"/>
+          <rect x="6" y="6" width="3.5" height="3.5" rx="0.5" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        dashboard
+      </a>
     </div>
   </div>
 
@@ -704,6 +741,16 @@
     <div class="readout-item">
       <span class="readout-label">Tilt</span>
       <span class="readout-value">23.44°</span>
+    </div>
+    <div class="readout-divider"></div>
+    <div class="readout-item">
+      <span class="readout-label">Gravity</span>
+      <span class="readout-value">9.807 m/s²</span>
+    </div>
+    <div class="readout-divider"></div>
+    <div class="readout-item">
+      <span class="readout-label">Orb. Speed</span>
+      <span class="readout-value">29.78 km/s</span>
     </div>
     <div class="readout-divider"></div>
     <div class="readout-item">
@@ -746,7 +793,7 @@
   <div id="terra-card">
     <div class="card-header" id="card-toggle">
       <div class="card-title-group">
-        <span class="card-title">TERRA</span>
+        <span class="card-title">LUMINAR</span>
         <div class="card-title-sep"></div>
         <span class="card-subtitle">01 — Earth</span>
       </div>
@@ -769,6 +816,8 @@
         <button class="tab-btn active" data-tab="atmosphere">Atmosphere</button>
         <button class="tab-btn" data-tab="mass">Mass</button>
         <button class="tab-btn" data-tab="orbit">Orbit</button>
+        <button class="tab-btn" data-tab="surface">Surface</button>
+        <button class="tab-btn" data-tab="life">Life</button>
       </div>
 
       <!-- Atmosphere Panel -->
@@ -911,8 +960,93 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+
+      <!-- Surface Panel -->
+      <div class="tab-panel" id="tab-surface">
+        <div class="fact-row">
+          <span class="fact-key">Total Surface Area</span>
+          <span class="fact-val">510.072 <em>× 10⁶ km²</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Land Area</span>
+          <span class="fact-val">148.940 <em>× 10⁶ km²</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Ocean Area</span>
+          <span class="fact-val">361.132 <em>× 10⁶ km²</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Ocean Coverage</span>
+          <span class="fact-val">70.8 <em>%</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Deepest Point</span>
+          <span class="fact-val">−10,994 <em>m (Challenger Deep)</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Highest Point</span>
+          <span class="fact-val">8,849 <em>m (Mt. Everest)</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Mean Ocean Depth</span>
+          <span class="fact-val">3,688 <em>m</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Tectonic Plates</span>
+          <span class="fact-val">7 major <em>+ minor</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Ice Coverage</span>
+          <span class="fact-val">~10 <em>% land area</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Fresh Water</span>
+          <span class="fact-val">2.5 <em>% of total</em></span>
+        </div>
+      </div>
+
+      <!-- Life Panel -->
+      <div class="tab-panel" id="tab-life">
+        <div class="fact-row">
+          <span class="fact-key">Human Population</span>
+          <span class="fact-val">8.1 <em>× 10⁹</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Known Species</span>
+          <span class="fact-val">~8.7 <em>million</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Age of Earth</span>
+          <span class="fact-val">4.543 <em>× 10⁹ yr</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">First Life</span>
+          <span class="fact-val">~3.7 <em>Ga (microbial)</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Forest Coverage</span>
+          <span class="fact-val">31 <em>% land area</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Mean Surface Temp</span>
+          <span class="fact-val">+14.9 <em>°C</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Hottest Recorded</span>
+          <span class="fact-val">+56.7 <em>°C (Death Valley)</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Coldest Recorded</span>
+          <span class="fact-val">−89.2 <em>°C (Vostok)</em></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-key">Biomes</span>
+          <span class="fact-val">14 <em>major types</em></span>
+        </div>
+      </div>
+    
+    </div><!-- /card-body -->
+  </div><!-- /terra-card -->
 
 </div><!-- /overlay -->
 
@@ -1258,14 +1392,22 @@ Promise.all([
   updateAlt();
 
   // ── Orbit Mode — triggered by tab ──
+  window._orbitModeActive = false;
+  window._equatorTargetOpacityReset = function() {
+    equatorTargetOpacity = 0;
+  };
   window.setOrbitMode = function(active) {
     orbitModeActive = active;
+    window._orbitModeActive = active;
     if (active) {
       targetZ = 400; // wide view
       equatorTargetOpacity = 1;
     } else {
       targetZ = 280;
       equatorTargetOpacity = 0;
+      // Force immediate fade out to prevent lingering line
+      equatorMat.opacity = 0;
+      equatorGlowMat.opacity = 0;
     }
     updateAlt();
   };
@@ -1339,6 +1481,12 @@ function setExpanded(expanded) {
   } else {
     card.classList.remove('expanded');
     globeCanvas.classList.remove('card-open');
+    // Fix: ensure equator ring is hidden when card collapses (unless orbit mode active)
+    if (typeof window.setOrbitMode === 'function' && !window._orbitModeActive) {
+      if (typeof window._equatorTargetOpacityReset === 'function') {
+        window._equatorTargetOpacityReset();
+      }
+    }
   }
 }
 
