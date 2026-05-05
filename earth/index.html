@@ -703,6 +703,12 @@
 
   /* Responsive */
   @media (max-width: 600px) {
+    body {
+      cursor: auto;
+    }
+    #cursor, #cursor-ring {
+      display: none;
+    }
     #side-readout {
       display: none;
     }
@@ -710,17 +716,77 @@
       display: none;
     }
     #coord-badge {
-      top: 72px;
-      right: 16px;
+      top: auto;
+      bottom: 120px;
+      right: 12px;
+      left: auto;
+      min-width: 140px;
+      padding: 10px 14px;
+      gap: 5px;
+      border-radius: 12px;
+    }
+    .coord-val {
+      font-size: 10px;
     }
     #topbar {
-      padding: 18px 20px;
+      padding: 14px 16px;
+    }
+    .nav-logo-img {
+      width: 26px;
+      height: 26px;
+    }
+    .nav-logo-text {
+      font-size: 13px;
+    }
+    .nav-pill {
+      font-size: 7px;
+      padding: 5px 10px;
+      letter-spacing: 0.28em;
+    }
+    .nav-right {
+      gap: 10px;
     }
     #terra-card {
-      bottom: 20px;
+      bottom: 16px;
+      width: calc(100vw - 24px);
+      border-radius: 18px;
     }
     :root {
-      --card-h-expanded: 58vh;
+      --card-h-collapsed: 76px;
+      --card-h-expanded: 62vh;
+    }
+    .card-title {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+    }
+    .card-subtitle {
+      font-size: 7px;
+    }
+    .card-status {
+      font-size: 6.5px;
+      letter-spacing: 0.12em;
+    }
+    .card-header {
+      padding: 0 16px;
+    }
+    .card-body {
+      padding: 20px 16px 16px;
+    }
+    .tab-btn {
+      font-size: 7px;
+      letter-spacing: 0.15em;
+      padding: 7px 2px;
+    }
+    #globe-canvas.card-open {
+      transform: translateY(-4vh) scale(0.93);
+    }
+    #footer-copyright {
+      bottom: 6px;
+      font-size: 7px;
+      letter-spacing: 0.18em;
+    }
+    .orbit-visual {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>
@@ -788,11 +854,6 @@
     <div class="readout-item">
       <span class="readout-label">Orb. Speed</span>
       <span class="readout-value">29.78 km/s</span>
-    </div>
-    <div class="readout-divider"></div>
-    <div class="readout-item">
-      <span class="readout-label">Satellites</span>
-      <span class="readout-value live">1</span>
     </div>
   </div>
 
@@ -1324,6 +1385,7 @@ Promise.all([
     blending: THREE.AdditiveBlending,
   });
   const equatorRing = new THREE.LineLoop(equatorLinGeo, equatorLinMat);
+  equatorRing.visible = false;
   scene.add(equatorRing);
 
   // Outer glow ring (wider, softer) — also a LineLoop
@@ -1341,9 +1403,11 @@ Promise.all([
     blending: THREE.AdditiveBlending,
   });
   const equatorGlow = new THREE.LineLoop(equatorGlowGeo, equatorGlowMat);
+  equatorGlow.visible = false;
   scene.add(equatorGlow);
 
   let equatorTargetOpacity = 0;
+  let orbitTabActive = false;
 
   // ── Interaction ──
   let dragging = false,
@@ -1457,22 +1521,29 @@ Promise.all([
   // ── Orbit Mode — triggered by tab ──
   window._orbitModeActive = false;
   window._equatorTargetOpacityReset = function() {
+    orbitTabActive = false;
     equatorTargetOpacity = 0;
     equatorLinMat.opacity = 0;
     equatorGlowMat.opacity = 0;
+    equatorRing.visible = false;
+    equatorGlow.visible = false;
   };
   window.setOrbitMode = function(active) {
     orbitModeActive = active;
+    orbitTabActive = active;
     window._orbitModeActive = active;
     if (active) {
-      targetZ = 380; // wide view but not too extreme
+      targetZ = 380;
       equatorTargetOpacity = 1;
+      equatorRing.visible = true;
+      equatorGlow.visible = true;
     } else {
       targetZ = 280;
       equatorTargetOpacity = 0;
-      // Force immediate fade out to prevent lingering line
       equatorLinMat.opacity = 0;
       equatorGlowMat.opacity = 0;
+      equatorRing.visible = false;
+      equatorGlow.visible = false;
     }
     updateAlt();
   };
@@ -1503,14 +1574,11 @@ Promise.all([
     updateCoords();
     updateAlt();
 
-    // Equator ring pulse + fade — hard-zero when inactive to prevent blue line ghost
-    const pulse = 0.7 + Math.sin(t * 2.8) * 0.3;
-    if (equatorTargetOpacity === 0) {
-      equatorLinMat.opacity = 0;
-      equatorGlowMat.opacity = 0;
-    } else {
-      equatorLinMat.opacity += (equatorTargetOpacity * pulse * 0.82 - equatorLinMat.opacity) * 0.06;
-      equatorGlowMat.opacity += (equatorTargetOpacity * pulse * 0.22 - equatorGlowMat.opacity) * 0.06;
+    // Equator ring — only render when orbit tab is active
+    if (orbitTabActive) {
+      const pulse = 0.7 + Math.sin(t * 2.8) * 0.3;
+      equatorLinMat.opacity += (pulse * 0.82 - equatorLinMat.opacity) * 0.06;
+      equatorGlowMat.opacity += (pulse * 0.22 - equatorGlowMat.opacity) * 0.06;
     }
 
     atmMat.uniforms.viewVector.value.copy(camera.position);
