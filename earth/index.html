@@ -382,10 +382,11 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 8px;
-    letter-spacing: 0.3em;
+    font-size: 7.5px;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
   }
   .status-dot {
     width: 5px;
@@ -745,7 +746,7 @@
   <!-- Top Bar -->
   <div id="topbar">
     <a href="#" class="nav-logo">
-      <img src="https://www.image2url.com/r2/default/images/1777947590718-0c2fb879-6396-4ee1-8b6b-ad1c9c45e987.png" alt="Luminar" class="nav-logo-img" />
+      <img src="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png" alt="image" class="nav-logo-img" />
       <span class="nav-logo-text">LUM<span>inar</span></span>
     </a>
     <div class="nav-right">
@@ -836,7 +837,7 @@
       <div class="card-header-right">
         <div class="card-status">
           <div class="status-dot"></div>
-          <span>Live</span>
+          <span>View informations</span>
         </div>
         <div class="expand-btn" id="expand-btn">
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
@@ -1085,6 +1086,23 @@
   </div><!-- /terra-card -->
 
 </div><!-- /overlay -->
+
+<!-- Copyright Footer -->
+<div id="footer-copyright" style="
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(240,238,234,0.28);
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  user-select: none;
+">© 2026 itztrmin. All rights reserved.</div>
 
 <script type="importmap">
 {
@@ -1485,10 +1503,15 @@ Promise.all([
     updateCoords();
     updateAlt();
 
-    // Equator ring pulse + fade
+    // Equator ring pulse + fade — hard-zero when inactive to prevent blue line ghost
     const pulse = 0.7 + Math.sin(t * 2.8) * 0.3;
-    equatorLinMat.opacity += (equatorTargetOpacity * pulse * 0.82 - equatorLinMat.opacity) * 0.06;
-    equatorGlowMat.opacity += (equatorTargetOpacity * pulse * 0.22 - equatorGlowMat.opacity) * 0.06;
+    if (equatorTargetOpacity === 0) {
+      equatorLinMat.opacity = 0;
+      equatorGlowMat.opacity = 0;
+    } else {
+      equatorLinMat.opacity += (equatorTargetOpacity * pulse * 0.82 - equatorLinMat.opacity) * 0.06;
+      equatorGlowMat.opacity += (equatorTargetOpacity * pulse * 0.22 - equatorGlowMat.opacity) * 0.06;
+    }
 
     atmMat.uniforms.viewVector.value.copy(camera.position);
     outerMat.uniforms.viewVector.value.copy(camera.position);
