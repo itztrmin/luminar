@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LUMINAR — /earth</title>
 <link rel="icon" type="image/png" href="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
 <link rel="apple-touch-icon" href="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
@@ -47,7 +47,15 @@
   body {
     width: 100%;
     height: 100%;
+    /* Allow touch/mouse events to reach the globe while keeping the fixed-layout intact */
     overflow: hidden;
+  }
+  /* On mobile, allow vertical scroll so content is reachable */
+  @media (max-width: 600px) {
+    html, body {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
   }
 
   body {
@@ -760,7 +768,7 @@
       gap: 10px;
     }
     #terra-card {
-      bottom: 16px;
+      bottom: 28px;
       width: calc(100vw - 24px);
       border-radius: 18px;
     }
@@ -783,7 +791,8 @@
     }
     .card-body {
       padding: 20px 16px 16px;
-      max-height: calc(60vh - var(--card-h-collapsed));
+      max-height: calc(65vh - var(--card-h-collapsed));
+      overflow-y: auto;
     }
     .tab-btn {
       font-size: 7px;
@@ -794,7 +803,16 @@
       transform: translateY(-4vh) scale(0.93);
     }
     #footer-copyright {
-      display: none;
+      bottom: 6px;
+      font-size: 7.5px;
+      letter-spacing: 0.18em;
+      color: rgba(240,238,234,0.22);
+      white-space: normal;
+      text-align: center;
+      width: calc(100vw - 32px);
+      padding: 0 8px;
+      /* Make sure it doesn't overlap the card */
+      bottom: 4px;
     }
     .orbit-visual {
       grid-template-columns: repeat(2, 1fr);
@@ -1585,13 +1603,12 @@ function triggerAtmBars() {
 
 function setExpanded(expanded) {
   if (expanded) {
-    // Animate to content height
-    card.style.height = card.style.height || (card.offsetHeight + 'px');
     card.classList.add('expanded');
-    // Force reflow, then let CSS auto take over
     const body = card.querySelector('.card-body');
-    const targetH = card.querySelector('.card-header').offsetHeight + body.scrollHeight + 2;
-    const maxH = window.innerHeight * 0.70;
+    const headerEl = card.querySelector('.card-header');
+    const isMobile = window.innerWidth <= 600;
+    const maxH = window.innerHeight * (isMobile ? 0.78 : 0.70);
+    const targetH = headerEl.offsetHeight + body.scrollHeight + 2;
     card.style.height = Math.min(targetH, maxH) + 'px';
     card.style.transition = 'height 0.5s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s, box-shadow 0.3s';
     globeCanvas.classList.add('card-open');
@@ -1612,11 +1629,12 @@ expandBtn.addEventListener('click', (e) => {
   setExpanded(!card.classList.contains('expanded'));
 });
 
-// Hide footer copyright when card is expanded
+// Hide footer copyright when card is expanded (all screen sizes)
 const footerEl = document.getElementById('footer-copyright');
 const observer = new MutationObserver(() => {
   if (footerEl) {
     footerEl.style.opacity = card.classList.contains('expanded') ? '0' : '1';
+    footerEl.style.pointerEvents = card.classList.contains('expanded') ? 'none' : 'none';
   }
 });
 observer.observe(card, { attributes: true, attributeFilter: ['class'] });
