@@ -1393,62 +1393,6 @@ function loadWithRetry(attempt) {
   scene.add(sun);
   scene.add(new THREE.AmbientLight(0x111133, 0.4));
 
-  // ── Equator Ring ──
-  // Use a LineLoop (points on a circle) instead of Torus so it's always a ring not a flat disk
-  const equatorPoints = [];
-  for (let i = 0; i <= 256; i++) {
-    const angle = (i / 256) * Math.PI * 2;
-    equatorPoints.push(new THREE.Vector3(Math.cos(angle) * 112, 0, Math.sin(angle) * 112));
-  }
-  const equatorLinGeo = new THREE.BufferGeometry().setFromPoints(equatorPoints);
-  const equatorLinMat = new THREE.LineBasicMaterial({
-    color: 0x4a9fff,
-    transparent: true,
-    opacity: 0,
-    depthWrite: false,
-    depthTest: false,
-    blending: THREE.AdditiveBlending,
-  });
-  const equatorRing = new THREE.LineLoop(equatorLinGeo, equatorLinMat);
-  equatorRing.visible = false;
-  equatorRing.renderOrder = 999;
-  earth.add(equatorRing);
-
-  // Outer glow ring (wider, softer) — also a LineLoop
-  const equatorGlowPoints = [];
-  for (let i = 0; i <= 256; i++) {
-    const angle = (i / 256) * Math.PI * 2;
-    equatorGlowPoints.push(new THREE.Vector3(Math.cos(angle) * 115, 0, Math.sin(angle) * 115));
-  }
-  const equatorGlowGeo = new THREE.BufferGeometry().setFromPoints(equatorGlowPoints);
-  const equatorGlowMat = new THREE.LineBasicMaterial({
-    color: 0x2a6fd4,
-    transparent: true,
-    opacity: 0,
-    depthWrite: false,
-    depthTest: false,
-    blending: THREE.AdditiveBlending,
-  });
-  const equatorGlow = new THREE.LineLoop(equatorGlowGeo, equatorGlowMat);
-  equatorGlow.visible = false;
-  equatorGlow.renderOrder = 998;
-  earth.add(equatorGlow);
-
-  let equatorTargetOpacity = 0;
-  let orbitTabActive = false;
-
-  // Standalone equator-ring reset — safe to call before or after texture load
-  window._equatorTargetOpacityReset = function() {
-    orbitTabActive = false;
-    equatorTargetOpacity = 0;
-    if (typeof equatorLinMat !== 'undefined') {
-      equatorLinMat.opacity = 0;
-      equatorGlowMat.opacity = 0;
-    }
-    equatorRing.visible = false;
-    equatorGlow.visible = false;
-  };
-
   // ── Interaction ──
   let dragging = false,
     px = 0,
@@ -1458,8 +1402,6 @@ function loadWithRetry(attempt) {
   let userActive = false,
     userTimer;
   let targetZ = 280;
-  let orbitModeActive = false;
-
   canvas.addEventListener('mousedown', e => {
     dragging = true;
     userActive = true;
@@ -1566,28 +1508,6 @@ function loadWithRetry(attempt) {
   }
   updateAlt();
 
-  // ── Orbit Mode — triggered by tab ──
-  window._orbitModeActive = false;
-  window.setOrbitMode = function(active) {
-    orbitModeActive = active;
-    orbitTabActive = active;
-    window._orbitModeActive = active;
-    if (active) {
-      targetZ = 380;
-      equatorTargetOpacity = 1;
-      equatorRing.visible = true;
-      equatorGlow.visible = true;
-    } else {
-      targetZ = 280;
-      equatorTargetOpacity = 0;
-      equatorLinMat.opacity = 0;
-      equatorGlowMat.opacity = 0;
-      equatorRing.visible = false;
-      equatorGlow.visible = false;
-    }
-    updateAlt();
-  };
-
   // ── Animate loop ──
   let t = 0;
   (function animate() {
@@ -1613,13 +1533,6 @@ function loadWithRetry(attempt) {
     // Live coordinate sync every frame
     updateCoords();
     updateAlt();
-
-    // Equator ring — only render when orbit tab is active
-    if (orbitTabActive) {
-      const pulse = 0.7 + Math.sin(t * 2.8) * 0.3;
-      equatorLinMat.opacity += (pulse * 0.82 - equatorLinMat.opacity) * 0.06;
-      equatorGlowMat.opacity += (pulse * 0.22 - equatorGlowMat.opacity) * 0.06;
-    }
 
     atmMat.uniforms.viewVector.value.copy(camera.position);
     outerMat.uniforms.viewVector.value.copy(camera.position);
@@ -1683,13 +1596,6 @@ function setExpanded(expanded) {
     card.style.transition = 'height 0.5s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s, box-shadow 0.3s';
     globeCanvas.classList.add('card-open');
     triggerAtmBars();
-    // If orbit tab is active while card re-expands, restore orbit mode visuals
-    const orbitTabBtn = document.querySelector('.tab-btn[data-tab="orbit"]');
-    if (orbitTabBtn && orbitTabBtn.classList.contains('active')) {
-      if (typeof window.setOrbitMode === 'function') {
-        window.setOrbitMode(true);
-      }
-    }
   } else {
     const headerEl = card.querySelector('.card-header');
     const collapseH = headerEl.offsetHeight + 'px';
@@ -1697,12 +1603,6 @@ function setExpanded(expanded) {
     card.style.height = collapseH;
     card.classList.remove('expanded');
     globeCanvas.classList.remove('card-open');
-    // Hide equator ring when card collapses (unless orbit mode should stay active)
-    if (!window._orbitModeActive) {
-      if (typeof window._equatorTargetOpacityReset === 'function') {
-        window._equatorTargetOpacityReset();
-      }
-    }
   }
 }
 
@@ -1721,18 +1621,13 @@ const observer = new MutationObserver(() => {
 });
 observer.observe(card, { attributes: true, attributeFilter: ['class'] });
 
-// ── Tab Switching — ORBIT tab triggers wide view + equator ring ──
+// ── Tab Switching ──
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-
-    // Orbit tab: wide camera + equator ring
-    if (typeof window.setOrbitMode === 'function') {
-      window.setOrbitMode(btn.dataset.tab === 'orbit');
-    }
 
     if (btn.dataset.tab === 'atmosphere') {
       setTimeout(() => {
