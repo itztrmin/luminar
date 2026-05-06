@@ -1242,12 +1242,24 @@ const loader = new THREE.TextureLoader();
 loader.setCrossOrigin('anonymous');
 const loadTex = url => new Promise((res, rej) => loader.load(url, res, undefined, rej));
 
-Promise.all([
-  loadTex(textureUrls.day),
-  loadTex(textureUrls.night),
-  loadTex(textureUrls.clouds),
-  loadTex(textureUrls.bump),
-]).then(([dayTex, nightTex, cloudsTex, bumpTex]) => {
+// ── Texture load with retry (up to 3 attempts, 2-second delay between) ──
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
+
+function loadWithRetry(attempt) {
+  const loaderEl = document.getElementById('loader');
+  const loaderText = loaderEl.querySelector('.loader-text');
+
+  if (attempt > 1) {
+    loaderText.textContent = 'Retrying... (' + (attempt - 1) + '/' + (MAX_RETRIES - 1) + ')';
+  }
+
+  Promise.all([
+    loadTex(textureUrls.day),
+    loadTex(textureUrls.night),
+    loadTex(textureUrls.clouds),
+    loadTex(textureUrls.bump),
+  ]).then(([dayTex, nightTex, cloudsTex, bumpTex]) => {
 
   // Dismiss loader
   setTimeout(() => document.getElementById('loader').classList.add('done'), 400);
@@ -1400,7 +1412,7 @@ Promise.all([
   const equatorRing = new THREE.LineLoop(equatorLinGeo, equatorLinMat);
   equatorRing.visible = false;
   equatorRing.renderOrder = 999;
-  scene.add(equatorRing);
+  earth.add(equatorRing);
 
   // Outer glow ring (wider, softer) — also a LineLoop
   const equatorGlowPoints = [];
@@ -1420,10 +1432,22 @@ Promise.all([
   const equatorGlow = new THREE.LineLoop(equatorGlowGeo, equatorGlowMat);
   equatorGlow.visible = false;
   equatorGlow.renderOrder = 998;
-  scene.add(equatorGlow);
+  earth.add(equatorGlow);
 
   let equatorTargetOpacity = 0;
   let orbitTabActive = false;
+
+  // Standalone equator-ring reset — safe to call before or after texture load
+  window._equatorTargetOpacityReset = function() {
+    orbitTabActive = false;
+    equatorTargetOpacity = 0;
+    if (typeof equatorLinMat !== 'undefined') {
+      equatorLinMat.opacity = 0;
+      equatorGlowMat.opacity = 0;
+    }
+    equatorRing.visible = false;
+    equatorGlow.visible = false;
+  };
 
   // ── Interaction ──
   let dragging = false,
@@ -1513,37 +1537,37 @@ Promise.all([
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // ── Coordinate Readout — live from camera distance + earth rotation ──
+  // ── Coordinate Readout — raycaster from camera centre toward Earth ──
+  const _coordRaycaster = new THREE.Raycaster();
+  const _coordScreenCentre = new THREE.Vector2(0, 0); // NDC centre
   function updateCoords() {
-    // Map earth rotation to lat/lon naturally
-    let lat = (-earth.rotation.x * (180 / Math.PI));
-    lat = ((lat + 90) % 180) - 90; // clamp to [-90, 90]
-    let lon = (earth.rotation.y * (180 / Math.PI));
-    lon = ((lon % 360) + 360) % 360;
-    if (lon > 180) lon -= 360; // wrap to [-180, 180]
-
-    document.getElementById('lat-val').textContent =
-      (lat >= 0 ? '+' : '') + lat.toFixed(2) + '°';
-    document.getElementById('lon-val').textContent =
-      (lon >= 0 ? '+' : '') + lon.toFixed(2) + '°';
+    _coordRaycaster.setFromCamera(_coordScreenCentre, camera);
+    const hits = _coordRaycaster.intersectObject(earth, false);
+    if (hits.length > 0) {
+      // Convert world-space hit point to Earth's local space
+      const localPt = earth.worldToLocal(hits[0].point.clone());
+      const norm = localPt.clone().normalize();
+      const lat = Math.asin(Math.max(-1, Math.min(1, norm.y))) * (180 / Math.PI);
+      // atan2(x, z) gives longitude relative to the local +Z axis (prime meridian)
+      const lon = Math.atan2(norm.x, norm.z) * (180 / Math.PI);
+      document.getElementById('lat-val').textContent =
+        (lat >= 0 ? '+' : '') + lat.toFixed(2) + '\xb0';
+      document.getElementById('lon-val').textContent =
+        (lon >= 0 ? '+' : '') + lon.toFixed(2) + '\xb0';
+    }
   }
 
   function updateAlt() {
-    const km = Math.round((camera.position.z - 100) * 2.8);
+    // Distance from camera to Earth surface (radius = 100 units).
+    // Scale factor: 1 scene unit ≈ 63.78 km (Earth radius 6378 km / 100 units).
+    const distFromSurface = camera.position.distanceTo(earth.position) - 100;
+    const km = Math.round(distFromSurface * 63.78);
     document.getElementById('alt-val').textContent = km.toLocaleString() + ' km';
   }
   updateAlt();
 
   // ── Orbit Mode — triggered by tab ──
   window._orbitModeActive = false;
-  window._equatorTargetOpacityReset = function() {
-    orbitTabActive = false;
-    equatorTargetOpacity = 0;
-    equatorLinMat.opacity = 0;
-    equatorGlowMat.opacity = 0;
-    equatorRing.visible = false;
-    equatorGlow.visible = false;
-  };
   window.setOrbitMode = function(active) {
     orbitModeActive = active;
     orbitTabActive = active;
@@ -1603,14 +1627,33 @@ Promise.all([
     renderer.render(scene, camera);
   })();
 
-}).catch(err => {
-  console.error('Texture load failed:', err);
-  const loaderEl = document.getElementById('loader');
-  const loaderText = loaderEl.querySelector('.loader-text');
-  loaderText.textContent = 'Load error — retrying...';
-  // Auto-dismiss loader after a delay so the UI isn't stuck forever
-  setTimeout(() => loaderEl.classList.add('done'), 2500);
-});
+  }).catch(err => {
+    console.error('Texture load attempt ' + attempt + ' failed:', err);
+    if (attempt < MAX_RETRIES) {
+      setTimeout(() => loadWithRetry(attempt + 1), RETRY_DELAY_MS);
+    } else {
+      // All retries exhausted — show error state with a manual Retry button
+      const loaderEl = document.getElementById('loader');
+      loaderEl.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;padding:0 32px;">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="19" stroke="rgba(74,159,255,0.35)" stroke-width="1"/>
+            <path d="M20 12v10M20 27v2" stroke="#4a9fff" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p style="font-family:'Geist Mono',monospace;font-size:8px;letter-spacing:0.45em;text-transform:uppercase;color:rgba(240,238,234,0.6);">Texture load failed</p>
+          <button id="retry-btn" style="font-family:'Geist Mono',monospace;font-size:8px;letter-spacing:0.38em;text-transform:uppercase;color:#4a9fff;padding:8px 20px;border:1px solid rgba(74,159,255,0.35);border-radius:100px;background:rgba(42,111,212,0.1);cursor:pointer;transition:border-color 0.2s,background 0.2s;">
+            Retry
+          </button>
+        </div>`;
+      document.getElementById('retry-btn').addEventListener('click', () => {
+        loaderEl.innerHTML = '<div class="loader-ring"></div><p class="loader-text">Initialising Luminar</p>';
+        loadWithRetry(1);
+      });
+    }
+  });
+}
+
+loadWithRetry(1);
 
 // ── Card Expand / Collapse — syncs globe offset ──
 const card = document.getElementById('terra-card');
@@ -1640,6 +1683,13 @@ function setExpanded(expanded) {
     card.style.transition = 'height 0.5s cubic-bezier(0.77, 0, 0.175, 1), border-color 0.3s, box-shadow 0.3s';
     globeCanvas.classList.add('card-open');
     triggerAtmBars();
+    // If orbit tab is active while card re-expands, restore orbit mode visuals
+    const orbitTabBtn = document.querySelector('.tab-btn[data-tab="orbit"]');
+    if (orbitTabBtn && orbitTabBtn.classList.contains('active')) {
+      if (typeof window.setOrbitMode === 'function') {
+        window.setOrbitMode(true);
+      }
+    }
   } else {
     const headerEl = card.querySelector('.card-header');
     const collapseH = headerEl.offsetHeight + 'px';
@@ -1647,7 +1697,7 @@ function setExpanded(expanded) {
     card.style.height = collapseH;
     card.classList.remove('expanded');
     globeCanvas.classList.remove('card-open');
-    // Fix: ensure equator ring is hidden when card collapses (unless orbit mode active)
+    // Hide equator ring when card collapses (unless orbit mode should stay active)
     if (!window._orbitModeActive) {
       if (typeof window._equatorTargetOpacityReset === 'function') {
         window._equatorTargetOpacityReset();
