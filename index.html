@@ -1,1 +1,483 @@
-soon bro 🥀
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Luminar.space — Coming Soon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Goldman:wght@400;700&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #07080f;
+    color: #e2e8f0;
+    font-family: 'Goldman', sans-serif;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* ── Background: layered dark gradients, no stars ── */
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%,   rgba(10,18,50,0.95) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 20% 80%,  rgba(80,5,5,0.18)   0%, transparent 60%),
+      radial-gradient(ellipse 50% 35% at 80% 90%,  rgba(10,20,70,0.22) 0%, transparent 60%),
+      radial-gradient(ellipse 100% 100% at 50% 50%, #07080f 0%, #0a0c1a 100%);
+  }
+
+  /* Subtle noise texture overlay */
+  .bg-layer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* Vignette */
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(5,5,12,0.85) 100%);
+    pointer-events: none;
+  }
+
+  /* Horizontal glow line in the middle */
+  .mid-glow {
+    position: fixed;
+    left: 0; right: 0;
+    top: 50%;
+    height: 1px;
+    background: linear-gradient(to right, transparent 5%, rgba(15,60,140,0.2) 30%, rgba(37,99,235,0.25) 50%, rgba(15,60,140,0.2) 70%, transparent 95%);
+    transform: translateY(-60px);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ── Center content ── */
+  .center {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .top-line {
+    width: 1px;
+    height: 44px;
+    background: linear-gradient(to bottom, transparent, rgba(56,133,252,0.5));
+    margin-bottom: 18px;
+    animation: fadeIn 1.8s ease both;
+  }
+
+  /* ── Brand ── */
+  .brand-row {
+    display: flex;
+    align-items: flex-end;
+    line-height: 1;
+    gap: 2px;
+  }
+
+  .brand-luminar {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 700;
+    font-size: clamp(72px, 13vw, 140px);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: #7ec8ff;
+    text-shadow:
+      0 0 12px rgba(99,179,255,1),
+      0 0 30px rgba(56,133,252,0.9),
+      0 0 70px rgba(37,99,235,0.75),
+      0 0 140px rgba(29,78,216,0.5),
+      0 0 260px rgba(29,78,216,0.25);
+    animation: fadeSlideUp 1.4s cubic-bezier(.22,.68,0,1.2) both, bluePulse 5s ease-in-out 1.4s infinite;
+  }
+
+  @keyframes bluePulse {
+    0%, 100% {
+      text-shadow:
+        0 0 12px rgba(99,179,255,1),
+        0 0 30px rgba(56,133,252,0.9),
+        0 0 70px rgba(37,99,235,0.75),
+        0 0 140px rgba(29,78,216,0.5),
+        0 0 260px rgba(29,78,216,0.25);
+    }
+    50% {
+      text-shadow:
+        0 0 18px rgba(147,210,255,1),
+        0 0 50px rgba(99,179,255,1),
+        0 0 100px rgba(56,133,252,0.9),
+        0 0 200px rgba(37,99,235,0.6),
+        0 0 340px rgba(29,78,216,0.35);
+    }
+  }
+
+  .brand-dot {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 400;
+    font-size: clamp(24px, 4vw, 46px);
+    color: #2a2a3a;
+    line-height: 1;
+    margin-bottom: clamp(10px, 1.8vw, 22px);
+    animation: fadeSlideUp 1.4s cubic-bezier(.22,.68,0,1.2) 0.05s both;
+  }
+
+  .brand-space {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 400;
+    font-size: clamp(24px, 4vw, 46px);
+    color: #2e2e40;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    margin-bottom: clamp(10px, 1.8vw, 22px);
+    animation: fadeSlideUp 1.4s cubic-bezier(.22,.68,0,1.2) 0.08s both;
+  }
+
+  .coming-soon {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 400;
+    font-size: clamp(9px, 1.2vw, 11px);
+    letter-spacing: 0.6em;
+    text-transform: uppercase;
+    color: rgba(100,110,160,0.45);
+    margin-top: 10px;
+    animation: fadeIn 2s ease 1.2s both;
+  }
+
+  /* ── Routes section ── */
+  .routes-section {
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    animation: fadeIn 2s ease 1.8s both;
+  }
+
+  .routes-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 300px;
+  }
+
+  .routes-divider-line {
+    flex: 1;
+    height: 0.5px;
+    background: linear-gradient(to right, transparent, rgba(37,99,235,0.4), rgba(56,133,252,0.3), transparent);
+  }
+
+  .routes-label {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 400;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: rgba(100,110,160,0.35);
+    white-space: nowrap;
+  }
+
+  .routes-sub {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: rgba(120,130,180,0.45);
+  }
+
+  /* ── Custom dropdown ── */
+  .custom-select {
+    position: relative;
+    width: 260px;
+    user-select: none;
+  }
+
+  .cs-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 0.5px solid rgba(37,99,235,0.3);
+    border-top-color: rgba(56,133,252,0.4);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .cs-trigger:hover {
+    background: rgba(15,30,80,0.1);
+    border-color: rgba(56,133,252,0.55);
+  }
+
+  .cs-trigger.open {
+    border-color: rgba(37,99,235,0.6);
+    background: rgba(10,20,60,0.15);
+    border-bottom-color: transparent;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .cs-value {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(120,130,185,0.55);
+  }
+
+  .cs-trigger.open .cs-value,
+  .cs-trigger:hover .cs-value {
+    color: rgba(150,160,210,0.75);
+  }
+
+  .cs-arrow {
+    font-size: 10px;
+    color: rgba(100,110,165,0.4);
+    transition: transform 0.25s;
+  }
+
+  .cs-trigger.open .cs-arrow {
+    transform: rotate(180deg);
+    color: rgba(56,133,252,0.8);
+  }
+
+  .cs-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: #0c0e1a;
+    border: 0.5px solid rgba(37,99,235,0.4);
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s cubic-bezier(.4,0,.2,1), opacity 0.2s;
+    opacity: 0;
+    z-index: 100;
+  }
+
+  .cs-dropdown.open {
+    max-height: 280px;
+    opacity: 1;
+  }
+
+  .cs-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 0.5px solid rgba(255,255,255,0.03);
+    text-decoration: none;
+  }
+
+  .cs-option:last-child { border-bottom: none; }
+
+  .cs-option:hover {
+    background: linear-gradient(to right, rgba(15,40,100,0.25), rgba(37,99,235,0.1));
+  }
+
+  .cs-option-icon {
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  .cs-option-name {
+    font-family: 'Goldman', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(120,130,185,0.6);
+    transition: color 0.15s;
+  }
+
+  .cs-option:hover .cs-option-name {
+    color: rgba(147,197,253,0.9);
+  }
+
+  .cs-option-slug {
+    margin-left: auto;
+    font-family: 'Goldman', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: rgba(60,70,120,0.4);
+    transition: color 0.15s;
+  }
+
+  .cs-option:hover .cs-option-slug {
+    color: rgba(80,100,160,0.6);
+  }
+
+  /* ── Corners ── */
+  .corner {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    z-index: 5;
+    opacity: 0.2;
+  }
+  .corner.tl { top: 24px; left: 24px; border-top: 1px solid rgba(56,133,252,0.5); border-left: 1px solid rgba(56,133,252,0.5); }
+  .corner.tr { top: 24px; right: 24px; border-top: 1px solid rgba(56,133,252,0.5); border-right: 1px solid rgba(56,133,252,0.5); }
+  .corner.bl { bottom: 24px; left: 24px; border-bottom: 1px solid rgba(56,133,252,0.5); border-left: 1px solid rgba(56,133,252,0.5); }
+  .corner.br { bottom: 24px; right: 24px; border-bottom: 1px solid rgba(56,133,252,0.5); border-right: 1px solid rgba(56,133,252,0.5); }
+
+  .bottom-line {
+    width: 1px;
+    height: 36px;
+    background: linear-gradient(to bottom, rgba(56,133,252,0.35), transparent);
+    margin-top: 30px;
+    animation: fadeIn 2s ease 2.5s both;
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 22px;
+    font-family: 'Goldman', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: rgba(80,90,140,0.2);
+    z-index: 10;
+    text-transform: uppercase;
+    animation: fadeIn 3s ease 3s both;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="vignette"></div>
+<div class="mid-glow"></div>
+
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+
+<main class="center" role="main">
+  <div class="top-line"></div>
+
+  <div class="brand-row" aria-label="Luminar.space">
+    <span class="brand-luminar">LUMINAR</span>
+    <span class="brand-dot">.</span>
+    <span class="brand-space">SPACE</span>
+  </div>
+
+  <p class="coming-soon">Coming Soon</p>
+
+  <section class="routes-section" aria-label="Planet routes">
+    <div class="routes-divider">
+      <div class="routes-divider-line"></div>
+      <span class="routes-label">Our routes are ready</span>
+      <div class="routes-divider-line"></div>
+    </div>
+
+    <p class="routes-sub">Choose your destination</p>
+
+    <div class="custom-select" id="custom-select" role="listbox" aria-label="Select a planet destination">
+      <div class="cs-trigger" id="cs-trigger" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+        <span class="cs-value" id="cs-value">— Select a planet —</span>
+        <span class="cs-arrow">▼</span>
+      </div>
+      <div class="cs-dropdown" id="cs-dropdown" role="list"></div>
+    </div>
+  </section>
+
+  <div class="bottom-line"></div>
+</main>
+
+<footer class="footer">Something luminous is coming</footer>
+
+<script>
+  const base = window.location.origin;
+
+  const planets = [
+    { name: 'Mercury', icon: '☿', slug: 'mercury' },
+    { name: 'Venus',   icon: '♀', slug: 'venus'   },
+    { name: 'Earth',   icon: '🌍', slug: 'earth'   },
+    { name: 'Mars',    icon: '♂', slug: 'mars'    },
+    { name: 'Jupiter', icon: '♃', slug: 'jupiter' },
+    { name: 'Saturn',  icon: '♄', slug: 'saturn'  },
+    { name: 'Uranus',  icon: '♅', slug: 'uranus'  },
+    { name: 'Neptune', icon: '♆', slug: 'neptune' },
+  ];
+
+  const trigger  = document.getElementById('cs-trigger');
+  const dropdown = document.getElementById('cs-dropdown');
+  const valueEl  = document.getElementById('cs-value');
+  let isOpen = false;
+
+  // Build options
+  planets.forEach(({ name, icon, slug }) => {
+    const a = document.createElement('a');
+    a.className = 'cs-option';
+    a.href = `${base}/${slug}`;
+    a.setAttribute('role', 'option');
+    a.innerHTML = `
+      <span class="cs-option-icon">${icon}</span>
+      <span class="cs-option-name">${name}</span>
+      <span class="cs-option-slug">/${slug}</span>
+    `;
+    dropdown.appendChild(a);
+  });
+
+  function openMenu() {
+    isOpen = true;
+    trigger.classList.add('open');
+    dropdown.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeMenu() {
+    isOpen = false;
+    trigger.classList.remove('open');
+    dropdown.classList.remove('open');
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  trigger.addEventListener('click', () => isOpen ? closeMenu() : openMenu());
+
+  trigger.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isOpen ? closeMenu() : openMenu(); }
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  document.addEventListener('click', e => {
+    if (!document.getElementById('custom-select').contains(e.target)) closeMenu();
+  });
+</script>
+</body>
+</html>
