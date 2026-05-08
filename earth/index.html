@@ -138,7 +138,7 @@
   .nav-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     text-decoration: none;
     opacity: 0;
     animation: fadeIn 1s ease 0.4s forwards;
@@ -155,17 +155,24 @@
     filter: brightness(1.05);
     flex-shrink: 0;
   }
+  /* Thin rule separating the logo icon from the wordmark */
+  .nav-logo-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(240, 238, 234, 0.18);
+    flex-shrink: 0;
+  }
   .nav-logo-text {
     display: flex;
     align-items: baseline;
     line-height: 1;
   }
-  /* "LUM" — Cormorant Garamond light caps, elegant white */
+  /* "LUM" — Cinzel caps, clean white */
   .nav-logo-text .wordmark-lum {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    font-weight: 300;
-    letter-spacing: 0.32em;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
     color: rgba(255, 255, 255, 0.95);
     text-transform: uppercase;
   }
@@ -357,20 +364,13 @@
   .card-header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: 0 24px;
     height: var(--card-h-collapsed);
     cursor: pointer;
     user-select: none;
     flex-shrink: 0;
     position: relative;
-  }
-  .card-header-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    position: absolute;
-    right: 24px;
   }
   .card-header::after {
     content: '';
@@ -391,8 +391,6 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    flex: 1;
-    justify-content: center;
   }
   .card-title {
     font-family: 'Geist Mono', monospace;
@@ -415,8 +413,16 @@
     text-transform: uppercase;
     color: var(--blue-bright);
     opacity: 0.85;
+    line-height: 1;
+    position: relative;
+    top: 0;
   }
 
+  .card-header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
   .card-status {
     display: flex;
     align-items: center;
@@ -1062,9 +1068,6 @@
     .card-header {
       padding: 0 16px;
     }
-    .card-header-right {
-      right: 16px;
-    }
     .card-body {
       padding: 20px 16px 16px;
       max-height: calc(65vh - var(--card-h-collapsed));
@@ -1158,13 +1161,13 @@
               </button>
               <button class="planet-item" data-route="/sun" data-label="/sun" role="option">
                 <span class="planet-item-icon">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="0.9" fill="currentColor" opacity="0.25"/><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="0.9"/><line x1="7" y1="0.5" x2="7" y2="2" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="7" y1="12" x2="7" y2="13.5" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="0.5" y1="7" x2="2" y2="7" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="12" y1="7" x2="13.5" y2="7" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="2.05" y1="2.05" x2="3.12" y2="3.12" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="10.88" y1="10.88" x2="11.95" y2="11.95" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="11.95" y1="2.05" x2="10.88" y2="3.12" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="3.12" y1="10.88" x2="2.05" y2="11.95" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.2"/><line x1="7" y1="0.5" x2="7" y2="2.5" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="7" y1="11.5" x2="7" y2="13.5" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="0.5" y1="7" x2="2.5" y2="7" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="11.5" y1="7" x2="13.5" y2="7" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/><line x1="2.4" y1="2.4" x2="3.8" y2="3.8" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/><line x1="10.2" y1="10.2" x2="11.6" y2="11.6" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/><line x1="11.6" y1="2.4" x2="10.2" y2="3.8" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/><line x1="3.8" y1="10.2" x2="2.4" y2="11.6" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/></svg>
                 </span>
                 <span class="planet-item-info">
                   <span class="planet-item-name">/sun</span>
-                  <span class="planet-item-desc">Sol — G-type main-sequence star</span>
+                  <span class="planet-item-desc">Sol — Our host star — 1 AU</span>
                 </span>
-                <span class="planet-item-tag">★</span>
+                <span class="planet-item-tag">STAR</span>
               </button>
               <div class="planet-divider"></div>
               <button class="planet-item" data-route="/moon" data-label="/moon" role="option">
