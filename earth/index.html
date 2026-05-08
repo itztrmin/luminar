@@ -47,10 +47,10 @@
   body {
     width: 100%;
     height: 100%;
-    /* Allow touch/mouse events to reach the globe while keeping the fixed-layout intact */
+    
     overflow: hidden;
   }
-  /* On mobile, allow vertical scroll so content is reachable */
+  
   @media (max-width: 600px) {
     html, body {
       overflow-x: hidden;
@@ -65,7 +65,7 @@
     cursor: none;
   }
 
-  /* ── CURSOR ── */
+  
   #cursor {
     position: fixed;
     width: 5px;
@@ -95,7 +95,7 @@
     border-color: var(--blue-bright);
   }
 
-  /* ── GLOBE CANVAS ── */
+  
   #globe-canvas {
     position: fixed;
     inset: 0;
@@ -114,7 +114,7 @@
     }
   }
 
-  /* ── OVERLAY SHELL — pointer-events: none so globe stays interactive ── */
+  
   #overlay {
     position: fixed;
     inset: 0;
@@ -122,7 +122,7 @@
     pointer-events: none;
   }
 
-  /* ── TOP NAV ── */
+  
   #topbar {
     pointer-events: auto;
     position: absolute;
@@ -155,19 +155,12 @@
     filter: brightness(1.05);
     flex-shrink: 0;
   }
-  /* Thin rule separating the logo icon from the wordmark */
-  .nav-logo-divider {
-    width: 1px;
-    height: 18px;
-    background: rgba(240, 238, 234, 0.18);
-    flex-shrink: 0;
-  }
   .nav-logo-text {
     display: flex;
     align-items: baseline;
     line-height: 1;
   }
-  /* "LUM" — Cinzel caps, clean white */
+  
   .nav-logo-text .wordmark-lum {
     font-family: 'Cinzel', serif;
     font-size: 13px;
@@ -176,7 +169,7 @@
     color: rgba(255, 255, 255, 0.95);
     text-transform: uppercase;
   }
-  /* "inar" — Cormorant italic, blue accent */
+  
   .nav-logo-text .wordmark-inar {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
@@ -227,7 +220,7 @@
     color: #ffffff;
   }
 
-  /* ── SIDE READOUT — left edge ── */
+  
   #side-readout {
     position: absolute;
     left: 36px;
@@ -266,7 +259,7 @@
     margin-left: 2px;
   }
 
-  /* ── COORDINATE BADGE — top right corner ── */
+  
   #coord-badge {
     position: absolute;
     top: 82px;
@@ -283,7 +276,7 @@
     animation: fadeIn 1s ease 1.4s forwards;
     min-width: 168px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.4);
-    z-index: 8; /* below dropdown (999) so it never overlaps */
+    z-index: 8; 
   }
   .coord-row {
     display: flex;
@@ -310,7 +303,7 @@
     background: rgba(74,159,255,0.1);
   }
 
-  /* ── BOTTOM FLOATING CARD ── */
+  
   #terra-card {
     pointer-events: auto;
     position: absolute;
@@ -624,7 +617,7 @@
     line-height: 1.4;
   }
 
-  /* ── CONTROLS HINT ── */
+  
   #controls-hint {
     position: absolute;
     bottom: 142px;
@@ -657,7 +650,7 @@
     flex-shrink: 0;
   }
 
-  /* ── ANIMATIONS ── */
+  
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -713,7 +706,7 @@
     }
   }
 
-  /* ── LOADING SCREEN ── */
+  
   #loader {
     position: fixed;
     inset: 0;
@@ -745,7 +738,7 @@
     color: var(--off);
   }
 
-  /* ── PLANET SELECTOR ── */
+  
   .planet-selector {
     position: relative;
   }
@@ -803,7 +796,7 @@
     transform-origin: top right;
     transition: opacity 0.28s cubic-bezier(0.23,1,0.32,1), transform 0.28s cubic-bezier(0.23,1,0.32,1);
     z-index: 999;
-    color: rgba(240, 238, 234, 0.9); /* explicit color for SVG inheritance */
+    color: rgba(240, 238, 234, 0.9); 
   }
   .planet-selector.open .planet-dropdown {
     opacity: 1;
@@ -945,7 +938,7 @@
     margin: 4px 2px;
   }
 
-  /* ── STAR BLAST TRANSITION OVERLAY ── */
+  
   #starblast {
     position: fixed;
     inset: 0;
@@ -964,7 +957,7 @@
     height: 100%;
   }
 
-  /* ── FOOTER COPYRIGHT ── */
+  
   #footer-copyright {
     position: fixed;
     bottom: 10px;
@@ -991,7 +984,7 @@
     color: #ffffff;
   }
 
-  /* Responsive */
+  
   @media (max-width: 600px) {
     body {
       cursor: auto;
@@ -1015,7 +1008,7 @@
       border-radius: 12px;
       z-index: 8;
     }
-    /* When dropdown is open on mobile, hide the coord badge to avoid overlap */
+    
     .planet-selector.open ~ * #coord-badge,
     body.dropdown-open #coord-badge {
       opacity: 0 !important;
@@ -1089,8 +1082,7 @@
       text-align: center;
       width: calc(100vw - 32px);
       padding: 0 8px;
-      /* Make sure it doesn't overlap the card */
-      bottom: 4px;
+      
     }
     .orbit-visual {
       grid-template-columns: repeat(2, 1fr);
@@ -1100,28 +1092,23 @@
 </head>
 <body>
 
-<!-- Loader -->
 <div id="loader">
   <div class="loader-ring"></div>
   <p class="loader-text">Initialising Luminar</p>
 </div>
 
-<!-- Star Blast Transition -->
 <div id="starblast">
   <canvas id="starblast-canvas"></canvas>
 </div>
 
-<!-- Custom Cursor -->
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- Globe Canvas -->
 <canvas id="globe-canvas"></canvas>
 
-<!-- Full Overlay (pointer-events: none) -->
 <div id="overlay">
 
-  <!-- Top Bar -->
+  
   <div id="topbar">
     <a href="/" class="nav-logo" id="nav-logo" aria-label="Luminar — reload page">
       <img src="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png" alt="Luminar logo" class="nav-logo-img" />
@@ -1130,7 +1117,7 @@
       </span>
     </a>
     <div class="nav-right">
-      <!-- Planet Route Selector -->
+      
       <div class="planet-selector" id="planetSelector">
         <button class="nav-pill active planet-trigger" id="planetTrigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="planet-trigger-icon" id="planetTriggerIcon">
@@ -1286,7 +1273,7 @@
     </div>
   </div>
 
-  <!-- Left Side Readout -->
+  
   <div id="side-readout">
     <div class="readout-item">
       <span class="readout-label">Surface Temp</span>
@@ -1314,7 +1301,7 @@
     </div>
   </div>
 
-  <!-- Coordinate Badge (top-right) -->
+  
   <div id="coord-badge">
     <div class="coord-row">
       <span class="coord-label">Lat</span>
@@ -1332,7 +1319,7 @@
     </div>
   </div>
 
-  <!-- Controls Hint -->
+  
   <div id="controls-hint">
     <div class="hint-item">
       <div class="hint-key">⇥</div>
@@ -1344,7 +1331,7 @@
     </div>
   </div>
 
-  <!-- Floating Terra Card -->
+  
   <div id="terra-card">
     <div class="card-header" id="card-toggle">
       <div class="card-title-group">
@@ -1355,7 +1342,7 @@
       <div class="card-header-right">
         <div class="card-status">
           <div class="status-dot"></div>
-          <span>View informations</span>
+          <span>View information</span>
         </div>
         <div class="expand-btn" id="expand-btn">
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
@@ -1366,7 +1353,7 @@
     </div>
 
     <div class="card-body">
-      <!-- Tab Navigation -->
+      
       <div class="tab-bar">
         <button class="tab-btn active" data-tab="atmosphere">Atmosphere</button>
         <button class="tab-btn" data-tab="mass">Mass</button>
@@ -1375,7 +1362,7 @@
         <button class="tab-btn" data-tab="life">Life</button>
       </div>
 
-      <!-- Atmosphere Panel -->
+      
       <div class="tab-panel active" id="tab-atmosphere">
         <div class="fact-row">
           <span class="fact-key">Composition</span>
@@ -1400,33 +1387,33 @@
         <div class="atm-bar-wrap">
           <div class="atm-row">
             <span class="atm-name">Nitrogen</span>
-            <div class="atm-track"><div class="atm-fill" style="width:78%;background:#4a9fff;" data-width="0.78"></div></div>
+            <div class="atm-track"><div class="atm-fill" style="background:#4a9fff;" data-width="0.78"></div></div>
             <span class="atm-pct">78.1%</span>
           </div>
           <div class="atm-row">
             <span class="atm-name">Oxygen</span>
-            <div class="atm-track"><div class="atm-fill" style="width:21%;background:#22c55e;" data-width="0.21"></div></div>
+            <div class="atm-track"><div class="atm-fill" style="background:#22c55e;" data-width="0.21"></div></div>
             <span class="atm-pct">20.9%</span>
           </div>
           <div class="atm-row">
             <span class="atm-name">Argon</span>
-            <div class="atm-track"><div class="atm-fill" style="width:0.93%;background:#a78bfa;" data-width="0.0093"></div></div>
+            <div class="atm-track"><div class="atm-fill" style="background:#a78bfa;" data-width="0.0093"></div></div>
             <span class="atm-pct">0.93%</span>
           </div>
           <div class="atm-row">
             <span class="atm-name">CO₂</span>
-            <div class="atm-track"><div class="atm-fill" style="width:0.04%;background:#f97316;" data-width="0.0421"></div></div>
+            <div class="atm-track"><div class="atm-fill" style="background:#f97316;" data-width="0.0421"></div></div>
             <span class="atm-pct">0.042%</span>
           </div>
           <div class="atm-row">
             <span class="atm-name">Water Vap.</span>
-            <div class="atm-track"><div class="atm-fill" style="width:2%;background:#67e8f9;" data-width="0.025"></div></div>
+            <div class="atm-track"><div class="atm-fill" style="background:#67e8f9;" data-width="0.025"></div></div>
             <span class="atm-pct">~2.5%</span>
           </div>
         </div>
       </div>
 
-      <!-- Mass Panel -->
+      
       <div class="tab-panel" id="tab-mass">
         <div class="fact-row">
           <span class="fact-key">Total Mass</span>
@@ -1470,7 +1457,7 @@
         </div>
       </div>
 
-      <!-- Orbit Panel -->
+      
       <div class="tab-panel" id="tab-orbit">
         <div class="fact-row">
           <span class="fact-key">Semi-major Axis</span>
@@ -1516,7 +1503,7 @@
         </div>
       </div>
 
-      <!-- Surface Panel -->
+      
       <div class="tab-panel" id="tab-surface">
         <div class="fact-row">
           <span class="fact-key">Total Surface Area</span>
@@ -1560,7 +1547,7 @@
         </div>
       </div>
 
-      <!-- Life Panel -->
+      
       <div class="tab-panel" id="tab-life">
         <div class="fact-row">
           <span class="fact-key">Human Population</span>
@@ -1600,12 +1587,11 @@
         </div>
       </div>
     
-    </div><!-- /card-body -->
-  </div><!-- /terra-card -->
+    </div>
+  </div>
 
-</div><!-- /overlay -->
+</div>
 
-<!-- Copyright Footer -->
 <div id="footer-copyright">© 2026 <a href="https://trmin.kal.how" target="_blank" rel="noopener">itztrmin</a>. All rights reserved.</div>
 
 <script type="importmap">
@@ -1618,7 +1604,6 @@
 <script type="module">
 import * as THREE from 'three';
 
-// ── Cursor ──
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
 let mx = 0,
@@ -1643,13 +1628,11 @@ document.querySelectorAll('a, button, .expand-btn, .tab-btn, .nav-pill, .orbit-c
   el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
 });
 
-// Reload page when the Luminar logo is clicked
 document.getElementById('nav-logo').addEventListener('click', e => {
   e.preventDefault();
   window.location.reload();
 });
 
-// ── Globe Setup ──
 const canvas = document.getElementById('globe-canvas');
 const scene = new THREE.Scene();
 
@@ -1666,7 +1649,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 
-// Use reliable CDN texture URLs (threejs.org examples directory)
 const TEXTURE_BASE = 'https://threejs.org/examples/textures/planets/';
 const textureUrls = {
   day: TEXTURE_BASE + 'earth_atmos_2048.jpg',
@@ -1679,7 +1661,6 @@ const loader = new THREE.TextureLoader();
 loader.setCrossOrigin('anonymous');
 const loadTex = url => new Promise((res, rej) => loader.load(url, res, undefined, rej));
 
-// ── Texture load with retry (up to 3 attempts, 2-second delay between) ──
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;
 
@@ -1698,10 +1679,10 @@ function loadWithRetry(attempt) {
     loadTex(textureUrls.bump),
   ]).then(([dayTex, nightTex, cloudsTex, bumpTex]) => {
 
-  // Dismiss loader
+  
   setTimeout(() => document.getElementById('loader').classList.add('done'), 400);
 
-  // ── Earth ──
+  
   const earthGeo = new THREE.SphereGeometry(100, 128, 128);
   const earthMat = new THREE.ShaderMaterial({
     uniforms: {
@@ -1710,7 +1691,7 @@ function loadWithRetry(attempt) {
       bumpTexture: { value: bumpTex },
       sunDirection: { value: new THREE.Vector3(1, 0.3, 0.5).normalize() },
     },
-    vertexShader: /* glsl */ `
+    vertexShader:  `
       varying vec2 vUv;
       varying vec3 vNormal;
       varying vec3 vPosition;
@@ -1721,7 +1702,7 @@ function loadWithRetry(attempt) {
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
-    fragmentShader: /* glsl */ `
+    fragmentShader:  `
       uniform sampler2D dayTexture;
       uniform sampler2D nightTexture;
       uniform sampler2D bumpTexture;
@@ -1733,7 +1714,7 @@ function loadWithRetry(attempt) {
       void main() {
         vec3 normal = normalize(vNormal);
 
-        // Simple bump mapping
+        
         float bumpScale = 0.02;
         vec2 bumpUv = vUv;
         float bumpSample = texture2D(bumpTexture, bumpUv).r;
@@ -1753,7 +1734,7 @@ function loadWithRetry(attempt) {
 
         vec4 finalColor = mix(nightColor, dayColor, dayFactor);
 
-        // Water specular highlight
+        
         float waterMask = clamp(1.0 - dayColor.r * 0.6 - dayColor.g * 0.3, 0.0, 1.0);
         finalColor.rgb += spec * waterMask * 0.45 * dayFactor;
 
@@ -1764,7 +1745,7 @@ function loadWithRetry(attempt) {
   const earth = new THREE.Mesh(earthGeo, earthMat);
   scene.add(earth);
 
-  // ── Clouds ──
+  
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(101.8, 64, 64),
     new THREE.MeshPhongMaterial({
@@ -1776,14 +1757,14 @@ function loadWithRetry(attempt) {
   );
   scene.add(clouds);
 
-  // ── Atmosphere Glow ──
+  
   const makeGlow = (radius, color, side, intensity, power) => {
     const mat = new THREE.ShaderMaterial({
       uniforms: {
         glowColor: { value: new THREE.Color(color) },
         viewVector: { value: camera.position }
       },
-      vertexShader: /* glsl */ `
+      vertexShader:  `
         uniform vec3 viewVector;
         varying float intensity;
         void main() {
@@ -1793,7 +1774,7 @@ function loadWithRetry(attempt) {
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
-      fragmentShader: /* glsl */ `
+      fragmentShader:  `
         uniform vec3 glowColor;
         varying float intensity;
         void main() {
@@ -1811,7 +1792,7 @@ function loadWithRetry(attempt) {
   const atmMat = makeGlow(103.5, 0x1a6edc, THREE.FrontSide, 0.65, 3.0);
   const outerMat = makeGlow(110, 0x0a3a8c, THREE.BackSide, 0.4, 4.0);
 
-  // ── Stars ──
+  
   const sp = new Float32Array(14000 * 3);
   for (let i = 0; i < sp.length; i++) sp[i] = (Math.random() - 0.5) * 8000;
   const starGeo = new THREE.BufferGeometry();
@@ -1824,13 +1805,13 @@ function loadWithRetry(attempt) {
   });
   scene.add(new THREE.Points(starGeo, starMat));
 
-  // ── Lights ──
+  
   const sun = new THREE.DirectionalLight(0xfff5e0, 2.4);
   sun.position.set(200, 60, 100);
   scene.add(sun);
   scene.add(new THREE.AmbientLight(0x111133, 0.4));
 
-  // ── Interaction ──
+  
   let dragging = false,
     px = 0,
     py = 0,
@@ -1872,7 +1853,7 @@ function loadWithRetry(attempt) {
     updateAlt();
   }, { passive: false });
 
-  // Touch support
+  
   let lp = null;
   canvas.addEventListener('touchstart', e => {
     dragging = true;
@@ -1916,18 +1897,18 @@ function loadWithRetry(attempt) {
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // ── Coordinate Readout — raycaster from camera centre toward Earth ──
+  
   const _coordRaycaster = new THREE.Raycaster();
-  const _coordScreenCentre = new THREE.Vector2(0, 0); // NDC centre
+  const _coordScreenCentre = new THREE.Vector2(0, 0); 
   function updateCoords() {
     _coordRaycaster.setFromCamera(_coordScreenCentre, camera);
     const hits = _coordRaycaster.intersectObject(earth, false);
     if (hits.length > 0) {
-      // Convert world-space hit point to Earth's local space
+      
       const localPt = earth.worldToLocal(hits[0].point.clone());
       const norm = localPt.clone().normalize();
       const lat = Math.asin(Math.max(-1, Math.min(1, norm.y))) * (180 / Math.PI);
-      // atan2(x, z) gives longitude relative to the local +Z axis (prime meridian)
+      
       const lon = Math.atan2(norm.x, norm.z) * (180 / Math.PI);
       document.getElementById('lat-val').textContent =
         (lat >= 0 ? '+' : '') + lat.toFixed(2) + '\xb0';
@@ -1937,15 +1918,15 @@ function loadWithRetry(attempt) {
   }
 
   function updateAlt() {
-    // Distance from camera to Earth surface (radius = 100 units).
-    // Scale factor: 1 scene unit ≈ 63.78 km (Earth radius 6378 km / 100 units).
+    
+    
     const distFromSurface = camera.position.distanceTo(earth.position) - 100;
     const km = Math.round(distFromSurface * 63.78);
     document.getElementById('alt-val').textContent = km.toLocaleString() + ' km';
   }
   updateAlt();
 
-  // ── Animate loop ──
+  
   let t = 0;
   (function animate() {
     requestAnimationFrame(animate);
@@ -1964,10 +1945,10 @@ function loadWithRetry(attempt) {
     }
     clouds.rotation.y += 0.00018;
 
-    // Smooth camera zoom
+    
     camera.position.z += (targetZ - camera.position.z) * 0.06;
 
-    // Live coordinate sync every frame
+    
     updateCoords();
     updateAlt();
 
@@ -1982,7 +1963,7 @@ function loadWithRetry(attempt) {
     if (attempt < MAX_RETRIES) {
       setTimeout(() => loadWithRetry(attempt + 1), RETRY_DELAY_MS);
     } else {
-      // All retries exhausted — show error state with a manual Retry button
+      
       const loaderEl = document.getElementById('loader');
       loaderEl.innerHTML = `
         <div style="display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;padding:0 32px;">
@@ -2005,7 +1986,6 @@ function loadWithRetry(attempt) {
 
 loadWithRetry(1);
 
-// ── Card Expand / Collapse — syncs globe offset ──
 const card = document.getElementById('terra-card');
 const toggle = document.getElementById('card-toggle');
 const expandBtn = document.getElementById('expand-btn');
@@ -2048,23 +2028,20 @@ expandBtn.addEventListener('click', (e) => {
   setExpanded(!card.classList.contains('expanded'));
 });
 
-// Hide footer copyright when card is expanded (all screen sizes)
 const footerEl = document.getElementById('footer-copyright');
 const observer = new MutationObserver(() => {
   if (footerEl) {
     footerEl.style.opacity = card.classList.contains('expanded') ? '0' : '1';
-    footerEl.style.pointerEvents = card.classList.contains('expanded') ? 'none' : 'none';
+    footerEl.style.pointerEvents = card.classList.contains('expanded') ? 'none' : 'auto';
   }
 });
 observer.observe(card, { attributes: true, attributeFilter: ['class'] });
 
-// ── Planet Selector ──
 (function () {
   const selector = document.getElementById('planetSelector');
   const trigger = document.getElementById('planetTrigger');
   const dropdown = document.getElementById('planetDropdown');
   const triggerLabel = document.getElementById('planetTriggerLabel');
-  const triggerIcon = document.getElementById('planetTriggerIcon');
 
   function openDropdown() {
     selector.classList.add('open');
@@ -2090,7 +2067,7 @@ observer.observe(card, { attributes: true, attributeFilter: ['class'] });
     if (e.key === 'Escape') closeDropdown();
   });
 
-  // Stagger-animate items when dropdown opens
+  
   const observer2 = new MutationObserver(() => {
     if (selector.classList.contains('open')) {
       document.querySelectorAll('.planet-item').forEach((el, i) => {
@@ -2106,7 +2083,7 @@ observer.observe(card, { attributes: true, attributeFilter: ['class'] });
   });
   observer2.observe(selector, { attributes: true, attributeFilter: ['class'] });
 
-  // Planet items
+  
   document.querySelectorAll('.planet-item').forEach(item => {
     item.addEventListener('click', () => {
       const route = item.dataset.route;
@@ -2118,8 +2095,6 @@ observer.observe(card, { attributes: true, attributeFilter: ['class'] });
   });
 })();
 
-// ── Hyperspace Jump Transition ──
-// Clean 3-phase animation: (1) gather/contract → (2) warp lines bloom → (3) white-out
 function launchStarBlast(route, label) {
   const overlay = document.getElementById('starblast');
   const cvs = document.getElementById('starblast-canvas');
@@ -2134,7 +2109,7 @@ function launchStarBlast(route, label) {
   overlay.style.opacity = '1';
   overlay.classList.add('active');
 
-  // ── Stars: 200 points scattered across canvas
+  
   const stars = Array.from({ length: 200 }, () => {
     const angle = Math.random() * Math.PI * 2;
     const dist = 60 + Math.random() * (maxR - 60);
@@ -2148,11 +2123,11 @@ function launchStarBlast(route, label) {
     };
   });
 
-  // ── Warp lines: same angles as stars, will streak outward in phase 2
+  
   const warpLines = stars.map(s => ({
     angle: s.angle,
-    startDist: 0,       // tip position (grows outward)
-    length: 0,          // tail length behind tip
+    startDist: 0,       
+    length: 0,          
     speed: 18 + Math.random() * 38,
     width: 0.5 + Math.random() * 1.0,
     bright: 0.55 + Math.random() * 0.45,
@@ -2164,15 +2139,15 @@ function launchStarBlast(route, label) {
     done: false,
   }));
 
-  // Easing helpers
+  
   const easeIn  = t => t * t * t;
   const easeOut = t => 1 - Math.pow(1 - t, 3);
   const clamp01 = t => Math.max(0, Math.min(1, t));
 
-  // Phase durations (in ms)
-  const T_GATHER  = 380;  // stars drift toward centre
-  const T_WARP    = 480;  // warp lines streak out
-  const T_FLASH   = 140;  // white flash
+  
+  const T_GATHER  = 380;  
+  const T_WARP    = 480;  
+  const T_FLASH   = 140;  
   const T_TOTAL   = T_GATHER + T_WARP + T_FLASH;
 
   let startTime = null;
@@ -2185,25 +2160,25 @@ function launchStarBlast(route, label) {
 
     ctx.clearRect(0, 0, W, H);
 
-    // ── Phase progress values (0→1 each)
+    
     const tGather = clamp01(elapsed / T_GATHER);
     const tWarp   = clamp01((elapsed - T_GATHER) / T_WARP);
     const tFlash  = clamp01((elapsed - T_GATHER - T_WARP) / T_FLASH);
 
-    // ── Background: deep space, darkens as warp begins
+    
     const bgDark = easeIn(clamp01(tWarp * 1.4));
     ctx.fillStyle = `rgba(0, 1, 8, ${0.92 + bgDark * 0.08})`;
     ctx.fillRect(0, 0, W, H);
 
-    // ── Phase 1 — GATHER: stars creep toward centre, shrink slightly
+    
     if (tGather < 1 || tWarp === 0) {
       const gatherEased = easeIn(tGather);
       stars.forEach(s => {
-        // Move each star toward centre over T_GATHER
+        
         const newDist = s.dist * (1 - gatherEased * 0.18);
         const px = cx + Math.cos(s.angle) * newDist;
         const py = cy + Math.sin(s.angle) * newDist;
-        const alpha = s.bright * (1 - tWarp * 3); // fade as warp starts
+        const alpha = s.bright * (1 - tWarp * 3); 
         if (alpha <= 0) return;
         ctx.beginPath();
         ctx.arc(px, py, s.size * (1 - gatherEased * 0.25), 0, Math.PI * 2);
@@ -2212,11 +2187,11 @@ function launchStarBlast(route, label) {
       });
     }
 
-    // ── Phase 2 — WARP: streak lines burst from centre outward
+    
     if (tWarp > 0) {
       const warpEased = easeOut(tWarp);
 
-      // Subtle radial glow at origin
+      
       if (tWarp < 0.6) {
         const glowAlpha = (1 - tWarp / 0.6) * 0.35;
         const gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, 90);
@@ -2227,9 +2202,9 @@ function launchStarBlast(route, label) {
       }
 
       warpLines.forEach(l => {
-        // Tip accelerates outward
+        
         const tipDist = warpEased * (maxR * 1.3) * (l.speed / 56);
-        // Tail starts behind tip with some delay
+        
         const tailDelay = 0.12;
         const tailDist = Math.max(0, easeOut(clamp01(tWarp - tailDelay)) * (maxR * 1.3) * (l.speed / 56));
         const lineLen = tipDist - tailDist;
@@ -2241,7 +2216,7 @@ function launchStarBlast(route, label) {
         const x2 = cx + Math.cos(l.angle) * Math.min(tipDist, maxR * 1.2);
         const y2 = cy + Math.sin(l.angle) * Math.min(tipDist, maxR * 1.2);
 
-        // Fade out as lines leave canvas
+        
         const exitFade = clamp01(1 - (tipDist - maxR * 0.7) / (maxR * 0.5));
         const alpha = l.bright * exitFade;
         if (alpha <= 0.01) return;
@@ -2260,16 +2235,16 @@ function launchStarBlast(route, label) {
       });
     }
 
-    // ── Phase 3 — FLASH: clean white-to-black wipe
+    
     if (tFlash > 0) {
-      // Quick bright flash then fade to black
+      
       const flashAlpha = tFlash < 0.4
-        ? tFlash / 0.4             // 0→1 fast
-        : 1 - (tFlash - 0.4) / 0.6; // 1→0 slow
+        ? tFlash / 0.4             
+        : 1 - (tFlash - 0.4) / 0.6; 
       ctx.fillStyle = `rgba(210, 235, 255, ${flashAlpha * 0.82})`;
       ctx.fillRect(0, 0, W, H);
 
-      // Fade to black behind it
+      
       if (tFlash > 0.3) {
         const blackAlpha = (tFlash - 0.3) / 0.7;
         ctx.fillStyle = `rgba(0, 1, 8, ${blackAlpha})`;
@@ -2277,7 +2252,7 @@ function launchStarBlast(route, label) {
       }
     }
 
-    // ── Redirect at peak of flash
+    
     if (elapsed > T_GATHER + T_WARP + T_FLASH * 0.4 && !redirectDone) {
       redirectDone = true;
       setTimeout(() => {
@@ -2311,12 +2286,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-// ── Fix black screen when user navigates back to this page ──
-// Safari and some mobile browsers restore pages from bfcache without re-running scripts.
-// Forcing a reload ensures the WebGL context and Three.js scene are fully re-initialized.
 window.addEventListener('pageshow', (e) => {
   if (e.persisted) {
-    // Page was restored from back/forward cache — reload to reinitialise WebGL
+    
     window.location.reload();
   }
 });
