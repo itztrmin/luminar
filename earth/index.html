@@ -12,7 +12,7 @@
 <meta property="og:image" content="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://luminar.kal.how"/>
-<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="LUMINAR — /earth"/>
 <meta name="twitter:description" content="An interactive 3D Earth visualization with orbital data, atmospheric composition, and planetary facts."/>
 <meta name="twitter:image" content="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png"/>
@@ -941,6 +941,33 @@
     height: 100%;
   }
 
+  /* ── FOOTER COPYRIGHT ── */
+  #footer-copyright {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(240, 238, 234, 0.28);
+    pointer-events: auto;
+    z-index: 5;
+    white-space: nowrap;
+    user-select: none;
+    transition: opacity 0.3s;
+  }
+  #footer-copyright a {
+    color: rgba(240, 238, 234, 0.7);
+    text-decoration: none;
+    letter-spacing: inherit;
+    transition: color 0.2s;
+  }
+  #footer-copyright a:hover {
+    color: #ffffff;
+  }
+
   /* Responsive */
   @media (max-width: 600px) {
     body {
@@ -1197,12 +1224,12 @@
                 <span class="planet-item-tag">08</span>
               </button>
               <div class="planet-divider"></div>
-              <button class="planet-item" data-route="/deep-space" data-label="/deep-space" role="option">
+              <button class="planet-item" data-route="/route-names" data-label="/route-names" role="option">
                 <span class="planet-item-icon">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="1" fill="currentColor" opacity="0.9"/><circle cx="2" cy="3" r="0.7" fill="currentColor" opacity="0.5"/><circle cx="12" cy="4" r="0.7" fill="currentColor" opacity="0.5"/><circle cx="3" cy="11" r="0.7" fill="currentColor" opacity="0.4"/><circle cx="11" cy="11" r="0.7" fill="currentColor" opacity="0.4"/><circle cx="7" cy="1.5" r="0.5" fill="currentColor" opacity="0.6"/><circle cx="12.5" cy="8" r="0.5" fill="currentColor" opacity="0.5"/><circle cx="1.5" cy="8" r="0.5" fill="currentColor" opacity="0.5"/><path d="M7 3.5 L8.2 6.5 L11.5 6.5 L8.8 8.5 L9.8 11.5 L7 9.5 L4.2 11.5 L5.2 8.5 L2.5 6.5 L5.8 6.5 Z" stroke="currentColor" stroke-width="0.4" fill="none" opacity="0.35"/></svg>
                 </span>
                 <span class="planet-item-info">
-                  <span class="planet-item-name">/deep-space</span>
+                  <span class="planet-item-name">/route-names</span>
                   <span class="planet-item-desc">Beyond the heliosphere</span>
                 </span>
                 <span class="planet-item-tag">∞</span>
@@ -1543,22 +1570,7 @@
 </div><!-- /overlay -->
 
 <!-- Copyright Footer -->
-<div id="footer-copyright" style="
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Geist Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(240,238,234,0.28);
-  pointer-events: auto;
-  z-index: 5;
-  white-space: nowrap;
-  user-select: none;
-  transition: opacity 0.3s;
-">© 2026 <a href="https://trmin.kal.how" target="_blank" rel="noopener" style="color:rgba(74,159,255,0.55);text-decoration:none;letter-spacing:inherit;transition:color 0.2s;" onmouseover="this.style.color='rgba(74,159,255,0.95)'" onmouseout="this.style.color='rgba(74,159,255,0.55)'">itztrmin</a>. All rights reserved.</div>
+<div id="footer-copyright">© 2026 <a href="https://trmin.kal.how" target="_blank" rel="noopener">itztrmin</a>. All rights reserved.</div>
 
 <script type="importmap">
 {
@@ -1814,7 +1826,7 @@ function loadWithRetry(attempt) {
 
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
-    targetZ = Math.max(130, Math.min(520, targetZ + e.deltaY * 0.28));
+    targetZ = Math.max(130, Math.min(700, targetZ + e.deltaY * 0.28));
     updateAlt();
   }, { passive: false });
 
@@ -1834,7 +1846,7 @@ function loadWithRetry(attempt) {
         e.touches[0].clientY - e.touches[1].clientY
       );
       if (lp) {
-        targetZ = Math.max(130, Math.min(520, targetZ - (d - lp) * 0.8));
+        targetZ = Math.max(130, Math.min(700, targetZ - (d - lp) * 0.8));
         updateAlt();
       }
       lp = d;
