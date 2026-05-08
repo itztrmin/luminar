@@ -138,32 +138,53 @@
   .nav-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     text-decoration: none;
     opacity: 0;
     animation: fadeIn 1s ease 0.4s forwards;
+    cursor: pointer;
+    transition: opacity 0.25s;
+  }
+  .nav-logo:hover {
+    opacity: 0.82;
   }
   .nav-logo-img {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     object-fit: contain;
-    filter: brightness(1.1);
+    filter: brightness(1.05);
+    flex-shrink: 0;
+  }
+  /* Thin rule separating the logo icon from the wordmark */
+  .nav-logo-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(240, 238, 234, 0.18);
+    flex-shrink: 0;
   }
   .nav-logo-text {
+    display: flex;
+    align-items: baseline;
+    line-height: 1;
+  }
+  /* "LUM" — Cinzel caps, clean white */
+  .nav-logo-text .wordmark-lum {
     font-family: 'Cinzel', serif;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 400;
-    letter-spacing: 0.22em;
-    color: #ffffff;
+    letter-spacing: 0.28em;
+    color: rgba(255, 255, 255, 0.95);
     text-transform: uppercase;
   }
-  .nav-logo-text span {
-    font-style: italic;
+  /* "inar" — Cormorant italic, blue accent */
+  .nav-logo-text .wordmark-inar {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
+    font-style: italic;
+    font-size: 17px;
     font-weight: 300;
+    letter-spacing: 0.08em;
     color: var(--blue-bright);
-    letter-spacing: 0.1em;
+    margin-left: 1px;
   }
 
   .nav-right {
@@ -983,8 +1004,6 @@
       display: none;
     }
     #coord-badge {
-      top: auto;
-      bottom: auto;
       top: 68px;
       right: 12px;
       left: auto;
@@ -1010,8 +1029,11 @@
       width: 26px;
       height: 26px;
     }
-    .nav-logo-text {
-      font-size: 13px;
+    .nav-logo-text .wordmark-lum {
+      font-size: 11px;
+    }
+    .nav-logo-text .wordmark-inar {
+      font-size: 15px;
     }
     .nav-pill {
       font-size: 7px;
@@ -1099,9 +1121,12 @@
 
   <!-- Top Bar -->
   <div id="topbar">
-    <a href="#" class="nav-logo">
-      <img src="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png" alt="image" class="nav-logo-img" />
-      <span class="nav-logo-text">LUM<span>inar</span></span>
+    <a href="/" class="nav-logo" id="nav-logo" aria-label="Luminar — reload page">
+      <img src="https://www.image2url.com/r2/default/images/1777988310976-a870fc2b-63d3-4c38-92f0-e030c8a79bc9.png" alt="Luminar logo" class="nav-logo-img" />
+      <span class="nav-logo-divider" aria-hidden="true"></span>
+      <span class="nav-logo-text">
+        <span class="wordmark-lum">LUM</span><span class="wordmark-inar">inar</span>
+      </span>
     </a>
     <div class="nav-right">
       <!-- Planet Route Selector -->
@@ -1602,9 +1627,15 @@ document.addEventListener('mousemove', e => {
   ring.style.top = ry + 'px';
   requestAnimationFrame(animCursor);
 })();
-document.querySelectorAll('a, button, .expand-btn, .tab-btn, .nav-pill, .orbit-cell').forEach(el => {
+document.querySelectorAll('a, button, .expand-btn, .tab-btn, .nav-pill, .orbit-cell, .nav-logo').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+});
+
+// Reload page when the Luminar logo is clicked
+document.getElementById('nav-logo').addEventListener('click', e => {
+  e.preventDefault();
+  window.location.reload();
 });
 
 // ── Globe Setup ──
