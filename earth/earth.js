@@ -11,19 +11,17 @@ const LOADER_STAGES = [
 function setupLoader() {
   const el = document.getElementById('loader');
   const bar = el.querySelector('.loader-bar-fill');
-  const stageLabel = el.querySelector('.loader-stage');
+  const label = el.querySelector('.loader-stage');
   const pct = el.querySelector('.loader-pct');
-  const stageItems = el.querySelectorAll('.loader-stage-item');
+  const stageList = el.querySelectorAll('.loader-stage-item');
 
   function setStage(index) {
     const i = Math.min(index, LOADER_STAGES.length - 1);
-    stageItems.forEach((item, j) => {
+    stageList.forEach((item, j) => {
       item.classList.toggle('active', j === i);
       item.classList.toggle('done', j < i);
     });
-    if (stageLabel) stageLabel.textContent = LOADER_STAGES[i];
-    const list = el.querySelector('.loader-stage-list');
-    if (list) list.style.transform = `translateY(${-i * 16}px)`;
+    if (label) label.textContent = LOADER_STAGES[i];
   }
 
   function setProgress(ratio) {
@@ -35,7 +33,7 @@ function setupLoader() {
   }
 
   function showRetry(attempt) {
-    if (stageLabel) stageLabel.textContent = 'Retrying connection\u2026 (' + attempt + '/2)';
+    if (label) label.textContent = 'Retrying connection\u2026 (' + attempt + '/2)';
     if (bar) bar.style.background = 'rgba(251,191,36,0.7)';
   }
 
@@ -216,9 +214,9 @@ function launchStarBlast(route) {
   overlay.style.opacity = '1';
   overlay.classList.add('active');
 
-  const easeIn = t => t * t * t;
+  const easeIn  = t => t * t * t;
   const easeOut = t => 1 - Math.pow(1 - t, 3);
-  const clamp = t => Math.max(0, Math.min(1, t));
+  const clamp   = t => Math.max(0, Math.min(1, t));
 
   const stars = Array.from({ length: 200 }, () => {
     const angle = Math.random() * Math.PI * 2;
@@ -243,8 +241,8 @@ function launchStarBlast(route) {
     const elapsed = ts - start;
 
     const tGather = clamp(elapsed / T_GATHER);
-    const tWarp = clamp((elapsed - T_GATHER) / T_WARP);
-    const tFlash = clamp((elapsed - T_GATHER - T_WARP) / T_FLASH);
+    const tWarp   = clamp((elapsed - T_GATHER) / T_WARP);
+    const tFlash  = clamp((elapsed - T_GATHER - T_WARP) / T_FLASH);
 
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = 'rgba(0,1,8,' + (0.92 + easeIn(clamp(tWarp * 1.4)) * 0.08) + ')';
@@ -274,7 +272,7 @@ function launchStarBlast(route) {
         ctx.fillRect(0, 0, W, H);
       }
       warpLines.forEach(l => {
-        const tip = we * (maxR * 1.3) * (l.speed / 56);
+        const tip  = we * (maxR * 1.3) * (l.speed / 56);
         const tail = Math.max(0, easeOut(clamp(tWarp - 0.12)) * (maxR * 1.3) * (l.speed / 56));
         if (tip <= 2 || tip - tail <= 0) return;
         const x1 = cx + Math.cos(l.angle) * tail;
