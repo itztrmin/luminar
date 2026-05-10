@@ -20,6 +20,8 @@ If you are reading this text. I know you are that unemployed bitch who is here t
 <meta name="twitter:title" content="LUMINAR — /earth"/>
 <meta name="twitter:description" content="An interactive 3D Earth visualization with orbital data, atmospheric composition, and planetary facts."/>
 <meta name="twitter:image" content="/assets/earth.png"/>
+<meta name="provider" content="Luminar"/>
+<meta name="author" content="itztrmin"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@100;300;400;500&family=Cinzel:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -28,8 +30,28 @@ If you are reading this text. I know you are that unemployed bitch who is here t
 <body>
 
 <div id="loader">
-  <div class="loader-ring"></div>
-  <p class="loader-text">Initialising Luminar</p>
+  <div class="loader-inner">
+    <div class="loader-logo">
+      <img src="/assets/earth.png" alt="" class="loader-logo-img"/>
+      <span class="loader-wordmark"><span class="loader-lum">LUM</span><span class="loader-inar">inar</span></span>
+    </div>
+    <div class="loader-progress-wrap">
+      <div class="loader-bar-track">
+        <div class="loader-bar-fill"></div>
+      </div>
+      <div class="loader-meta">
+        <span class="loader-stage">Connecting to telemetry</span>
+        <span class="loader-pct">0%</span>
+      </div>
+    </div>
+    <div class="loader-stages">
+      <span class="loader-stage-item active">Telemetry</span>
+      <span class="loader-stage-item">Surface</span>
+      <span class="loader-stage-item">Clouds</span>
+      <span class="loader-stage-item">Atmosphere</span>
+      <span class="loader-stage-item">Render</span>
+    </div>
+  </div>
 </div>
 
 <div id="starblast">
